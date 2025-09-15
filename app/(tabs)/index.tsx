@@ -1,14 +1,48 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather'; // Use Feather icons for demo
 
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good Morning';
+  if (hour < 18) return 'Good Afternoon';
+  return 'Good Evening';
+}
+
 export default function SpendWiseHomeScreen() {
+  const [name, setName] = useState('');
+  const [profileImage, setProfileImage] = useState('');
+
+  useEffect(() => {
+    AsyncStorage.getItem('jwt_token').then(token => {
+      if (token) {
+        try {
+          const user: any = jwtDecode(token);
+          setName(user.name || user.displayName || user.given_name || '');
+          setProfileImage(user.picture || '');
+        } catch {}
+      }
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+      {/* Greeting (fixed at top) */}
+      <View style={styles.greetingBox}>
+        <Text style={styles.greetingText}>{getGreeting()}{name ? `, ${name}` : ''}!</Text>
+      </View>
+      <ScrollView contentContainerStyle={{ paddingBottom: 100, paddingTop: 0 }}>
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.avatar}><Text style={styles.avatarText}>J</Text></View>
+          <View style={styles.avatar}>
+            {profileImage ? (
+              <Image source={{ uri: profileImage }} style={styles.avatarImage} />
+            ) : (
+              <Text style={styles.avatarText}>O</Text>
+            )}
+          </View>
           <View style={styles.monthBox}>
             <Text style={styles.monthText}>October</Text>
             <Icon name="chevron-down" size={16} color="#8B5CF6" />
@@ -96,8 +130,17 @@ export default function SpendWiseHomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
+  greetingBox: {
+    padding: 20,
+    paddingBottom: 0,
+    marginTop: 24,
+    backgroundColor: '#f8fafc',
+    zIndex: 2,
+  },
+  greetingText: { fontSize: 22, fontWeight: 'bold', color: '#222' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 20 },
-  avatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#8B5CF6', alignItems: 'center', justifyContent: 'center' },
+  avatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#8B5CF6', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  avatarImage: { width: 40, height: 40, borderRadius: 20 },
   avatarText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
   monthBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
   monthText: { color: '#8B5CF6', fontWeight: 'bold', marginRight: 6 },
