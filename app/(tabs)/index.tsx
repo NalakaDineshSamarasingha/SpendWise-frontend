@@ -1,98 +1,97 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from "react";
+import { View, Text, Button, StyleSheet } from "react-native";
+import * as WebBrowser from "expo-web-browser";
+import { makeRedirectUri } from "expo-auth-session";
+import {jwtDecode} from "jwt-decode";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const BACKEND_URL = "https://spendwise-backend-2nvv.onrender.com";
 
-export default function HomeScreen() {
+type JwtPayload = {
+  id: string;
+  name: string;
+  email: string;
+  exp: number;
+};
+
+export default function LoginScreen() {
+  const [user, setUser] = useState<JwtPayload | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+
+  const redirectUri = makeRedirectUri({
+    scheme: "myapp", // must match your app.json
+  });
+
+  const loginWithGoogle = async () => {
+    const authUrl = `${BACKEND_URL}/auth/google?redirect_uri=${encodeURIComponent(
+      redirectUri
+    )}`;
+
+    const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
+
+    if (result.type === "success" && result.url) {
+      const url = new URL(result.url);
+      const jwt = url.searchParams.get("token");
+
+      if (jwt) {
+        setToken(jwt);
+        try {
+          const decoded: JwtPayload = jwtDecode(jwt);
+          setUser(decoded);
+        } catch (err) {
+          console.log("Failed to decode token:", err);
+        }
+      }
+    }
+  };
+
+  if (!user) {
+    return (
+      <View style={styles.container}>
+        <Button title="Sign in with Google" onPress={loginWithGoogle} />
+      </View>
+    );
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+      <Text style={styles.title}>🎉 Login Successful</Text>
+      <Text style={styles.text}>Name: {user.name}</Text>
+      <Text style={styles.text}>Email: {user.email}</Text>
+      <Text style={styles.tokenTitle}>JWT:</Text>
+      <Text style={styles.token}>{token}</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f4f6f8",
+    padding: 20,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 20,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  text: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: "#333",
+  },
+  tokenTitle: {
+    fontWeight: "bold",
+    marginTop: 15,
+  },
+  token: {
+    fontSize: 12,
+    color: "#555",
+    backgroundColor: "#eee",
+    padding: 10,
+    borderRadius: 6,
+    marginTop: 5,
+    textAlign: "center",
   },
 });
