@@ -7,7 +7,7 @@ Track your expenses, set budgets, collaborate with a partner, and plan savings o
 
 ## 📥 Download  
 
-👉 [Download SpendWise v1.0](https://github.com/your-username/spendwise/releases/tag/v1.0)  
+👉 [Download SpendWise v1.0](https://github.com/NalakaDineshSamarasingha/SpendWise-frontend/releases/tag/v1.0.0)  
 
 ---
 
@@ -18,9 +18,9 @@ Track your expenses, set budgets, collaborate with a partner, and plan savings o
 | 🔐 Google Login              | ✅ Working |
 | 📝 Add & Track Transactions  | ✅ Working |
 | 📊 Spending Insights         | ✅ Working |
-| 💰 Budget Creation           | ✅ Working |
-| 👥 Collaborate with One User (family, partner, friend) | ✅ Working |
-| 🌍 Trip & Event Planning     | ✅ Working |
+| 💰 Budget Creation           | ❌ Not yet implemented |
+| 👥 Collaborate with One User (family, partner, friend) | ❌ Not yet implemented |
+| 🌍 Trip & Event Planning     | ❌ Not yet implemented|
 | 🎯 Saving Goals              | ❌ Not yet implemented |
 
 ---
@@ -35,9 +35,10 @@ Track your expenses, set budgets, collaborate with a partner, and plan savings o
 
 ---
 
-## 📦 Installation  
+## 👥 Collaborators  
 
-Clone the repo:  
-```bash
-git clone https://github.com/your-username/spendwise.git
-cd spendwise
+- [@lakmali0256](https://github.com/lakmali0256)  
+
+---
+
+👉 [Backend](https://github.com/NalakaDineshSamarasingha/SpendWise-backend)  
