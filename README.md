@@ -31,7 +31,6 @@ Track your expenses, set budgets, collaborate with a partner, and plan savings o
 - **Backend:** Node.js + Express  
 - **Database:** MongoDB (Mongoose ORM)  
 - **Authentication:** Google OAuth + JWT  
-- **Cloud Services:** Firebase (notifications, identity management)  
 
 ---
 
