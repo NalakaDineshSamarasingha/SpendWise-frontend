@@ -79,30 +79,43 @@ class UserService {
       if (response.ok) {
         const apiResponse = await response.json();
         console.log('User account found, raw API data:', apiResponse);
-        
+
         // Transform API response to match our UserData interface
         const transformedData: UserData = {
-          accountBalance: apiResponse.data?.balance || 0,
-          income: 0, // TODO: Get from expenses API
-          expenses: 0, // TODO: Get from expenses API
-          transactions: [], // TODO: Get from transactions API
+          accountBalance: apiResponse.data?.accountBalance ?? 0,
+          income: apiResponse.data?.income ?? 0,
+          expenses: apiResponse.data?.expenses ?? 0,
+          transactions: Array.isArray(apiResponse.data?.transactions)
+            ? (apiResponse.data.transactions as unknown as Transaction[])
+            : [],
         };
-        
-        // Try to fetch additional data like transactions
+
+        // Try to fetch additional data like transactions, but only override if meaningful
         try {
           const additionalData = await this.fetchUserExpensesData();
           if (additionalData) {
-            transformedData.income = additionalData.income;
-            transformedData.expenses = additionalData.expenses;
-            transformedData.transactions = additionalData.transactions;
+            const { income, expenses, transactions } = additionalData;
+            const hasIncome = typeof income === 'number' && !Number.isNaN(income);
+            const hasExpenses = typeof expenses === 'number' && !Number.isNaN(expenses);
+            const hasTx = Array.isArray(transactions) && transactions.length > 0;
+
+            if (hasIncome) transformedData.income = income;
+            if (hasExpenses) transformedData.expenses = expenses;
+            if (hasTx) transformedData.transactions = transactions;
           }
         } catch (error) {
           console.log('Could not fetch additional expenses data:', error);
-          // Use mock data for development
-          const mockData = this.getMockUserData();
-          transformedData.income = mockData.data.income;
-          transformedData.expenses = mockData.data.expenses;
-          transformedData.transactions = mockData.data.transactions;
+          // keep the primary API values; do not overwrite with mock unless nothing present
+          if (
+            transformedData.income === 0 &&
+            transformedData.expenses === 0 &&
+            (!transformedData.transactions || transformedData.transactions.length === 0)
+          ) {
+            const mockData = this.getMockUserData();
+            transformedData.income = mockData.data.income;
+            transformedData.expenses = mockData.data.expenses;
+            transformedData.transactions = mockData.data.transactions;
+          }
         }
         
         console.log('Final transformed user data:', transformedData);
@@ -120,7 +133,7 @@ class UserService {
     }
   }
 
-  private async fetchUserExpensesData(): Promise<{ income: number; expenses: number; transactions: Transaction[] } | null> {
+  private async fetchUserExpensesData(): Promise<{ income?: number; expenses?: number; transactions?: Transaction[] } | null> {
     try {
       const token = await AsyncStorage.getItem('jwt_token');
       
@@ -136,14 +149,22 @@ class UserService {
       if (response.ok) {
         const expensesData = await response.json();
         console.log('Expenses data from API:', expensesData);
-        
-        // Transform expenses data to match our interface
-        // This would need to be adjusted based on your actual API response structure
-        return {
-          income: 0, // Calculate from expensesData if available
-          expenses: 0, // Calculate from expensesData if available
-          transactions: [], // Transform expensesData to transactions if available
-        };
+        // Only return meaningful overrides if available; otherwise return null to avoid clobbering
+        const maybeIncome = (expensesData?.data?.income ?? expensesData?.income);
+        const maybeExpenses = (expensesData?.data?.expenses ?? expensesData?.expenses);
+        const maybeTransactions = (expensesData?.data?.transactions ?? expensesData?.transactions);
+
+        const hasIncome = typeof maybeIncome === 'number';
+        const hasExpenses = typeof maybeExpenses === 'number';
+        const hasTx = Array.isArray(maybeTransactions) && maybeTransactions.length > 0;
+
+        if (hasIncome || hasExpenses || hasTx) {
+          return {
+            income: hasIncome ? maybeIncome : undefined,
+            expenses: hasExpenses ? maybeExpenses : undefined,
+            transactions: hasTx ? (maybeTransactions as unknown as Transaction[]) : undefined,
+          };
+        }
       }
       
       return null;

@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "client",
+  "name": "SpendWise",
     "slug": "client",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/spendwise.png",
     "scheme": "client",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -31,7 +31,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/spendwise.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
@@ -44,10 +44,11 @@
     ],
     "experiments": {
       "typedRoutes": true,
-      "reactCompiler": true
+      "reactCompiler": false
     },
     "extra": {
       "router": {},
+      "EXPO_PUBLIC_API_BASE_URL": "https://spendwise-backend-2nvv.onrender.com/trans",
       "eas": {
         "projectId": "404ddb68-a5b8-4d44-98b7-1ceef5703301"
       }

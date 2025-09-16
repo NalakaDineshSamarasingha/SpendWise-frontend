@@ -1,52 +1,24 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
-  Modal,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { AddTransactionModal, NewTransaction } from '../../components/transactions/AddTransactionModal';
+import type { Category as UICategory } from '../../components/transactions/CategorySelector';
+import { FilterModal, Filters } from '../../components/transactions/FilterModal';
+import { TransactionItem, UITransaction } from '../../components/transactions/TransactionItem';
+import { createTransaction, getTransactions, TransactionDTO } from '../../services/transactionsService';
 
 // Add type definitions at the top
-interface Transaction {
-  _id?: string; // MongoDB ObjectId (optional for new transactions)
-  description: string;
-  amount: number;
-  type: 'expense' | 'income';
-  date: Date | string;
-  addedBy: string; // User ObjectId
-  category?: string; // Optional as per schema
-  // UI-only properties (not sent to backend)
-  time?: string;
-  icon?: string;
-  color?: string;
-}
-
-interface Category {
-  name: string;
-  icon: string;
-  color: string;
-}
-
-interface NewTransaction {
-  type: 'expense' | 'income';
-  category: string;
-  description: string;
-  amount: string;
-  time: string;
-}
-
-interface Filters {
-  type: 'all' | 'income' | 'expense';
-  sortBy: 'highest' | 'lowest' | 'newest' | 'oldest';
-  categories: string[];
-}
+// Local UI category type alias
+type Category = UICategory;
 
 const ExpenseTrackerApp = () => {
   const [selectedMonth] = useState('Month'); // Remove setSelectedMonth if not used
@@ -57,69 +29,7 @@ const ExpenseTrackerApp = () => {
     sortBy: 'newest', // 'highest', 'lowest', 'newest', 'oldest'
     categories: [] // array of selected category names
   });
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    {
-      _id: '1',
-      description: 'Buy some grocery',
-      amount: 120,
-      type: 'expense',
-      date: new Date(),
-      addedBy: 'user123', // This should be the actual user ID from JWT
-      category: 'Shopping',
-      // UI-only properties
-      time: '10:00 AM',
-      icon: 'bag-outline',
-      color: '#FED7AA'
-    },
-    {
-      _id: '2',
-      description: 'Disney+ Annual..',
-      amount: 80,
-      type: 'expense',
-      date: new Date(),
-      addedBy: 'user123',
-      category: 'Subscription',
-      time: '03:30 PM',
-      icon: 'tv-outline',
-      color: '#DDD6FE'
-    },
-    {
-      _id: '3',
-      description: 'Buy a ramen',
-      amount: 32,
-      type: 'expense',
-      date: new Date(),
-      addedBy: 'user123',
-      category: 'Food',
-      time: '07:30 PM',
-      icon: 'restaurant-outline',
-      color: '#FECACA'
-    },
-    {
-      _id: '4',
-      description: 'Salary for July',
-      amount: 5000,
-      type: 'income',
-      date: new Date(Date.now() - 86400000), // Yesterday
-      addedBy: 'user123',
-      category: 'Salary',
-      time: '04:30 PM',
-      icon: 'cash-outline',
-      color: '#BBF7D0'
-    },
-    {
-      _id: '5',
-      description: 'Charging Tesla',
-      amount: 18,
-      type: 'expense',
-      date: new Date(Date.now() - 86400000), // Yesterday
-      addedBy: 'user123',
-      category: 'Transportation',
-      time: '08:30 PM',
-      icon: 'car-outline',
-      color: '#BFDBFE'
-    }
-  ]);
+  const [transactions, setTransactions] = useState<UITransaction[]>([]);
 
   const [newTransaction, setNewTransaction] = useState<NewTransaction>({
     type: 'expense',
@@ -133,7 +43,7 @@ const ExpenseTrackerApp = () => {
     })
   });
 
-  const categories: Category[] = [
+  const categories: Category[] = useMemo(() => ([
     { name: 'Shopping', icon: 'bag-outline', color: '#FED7AA' },
     { name: 'Food', icon: 'restaurant-outline', color: '#FECACA' },
     { name: 'Transportation', icon: 'car-outline', color: '#BFDBFE' },
@@ -142,31 +52,71 @@ const ExpenseTrackerApp = () => {
     { name: 'Bills', icon: 'receipt-outline', color: '#FEF3C7' },
     { name: 'Health', icon: 'medical-outline', color: '#A7F3D0' },
     { name: 'Salary', icon: 'cash-outline', color: '#BBF7D0' },
-  ];
+  ]), []);
 
-  const handleAddTransaction = () => {
+  const categoryMap = useMemo(() => {
+    const m = new Map<string, Category>();
+    categories.forEach(c => m.set(c.name, c));
+    return m;
+  }, [categories]);
+
+  const formatTime = (date: Date) =>
+    date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+  const toUITransaction = useCallback(
+    (dto: TransactionDTO): UITransaction => {
+      const d = new Date(dto.date);
+      const cat = dto.category ? categoryMap.get(dto.category) : undefined;
+      return {
+        _id: dto._id,
+        description: dto.description,
+        amount: dto.amount,
+        type: dto.type,
+        date: d,
+        addedBy: dto.addedBy,
+        category: dto.category,
+        time: formatTime(d),
+        icon: cat?.icon || 'cash-outline',
+        color: cat?.color || '#F3F4F6',
+      };
+    },
+    [categoryMap]
+  );
+
+  // Load transactions from backend
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getTransactions();
+        setTransactions(data.map(toUITransaction));
+      } catch (e) {
+        console.warn('Failed to load transactions, using local sample:', e);
+        // Optional: keep empty or set a small sample
+      }
+    })();
+  }, [toUITransaction]);
+
+  const handleAddTransaction = async () => {
     if (!newTransaction.category || !newTransaction.amount) {
       Alert.alert('Error', 'Please fill in all required fields');
       return;
     }
 
-    const categoryData = categories.find(cat => cat.name === newTransaction.category);
-    
-    const transaction: Transaction = {
-      _id: Date.now().toString(), // Generate temporary ID (backend will replace with actual ObjectId)
-      description: newTransaction.description,
-      amount: parseFloat(newTransaction.amount),
-      type: newTransaction.type,
-      date: new Date(),
-      addedBy: 'user123', // This should come from JWT token
-      category: newTransaction.category,
-      // UI-only properties
-      time: newTransaction.time,
-      icon: categoryData?.icon || 'cash-outline',
-      color: categoryData?.color || '#F3F4F6'
-    };
-    
-    setTransactions([transaction, ...transactions]);
+    try {
+      const created = await createTransaction({
+        description: newTransaction.description,
+        amount: parseFloat(newTransaction.amount),
+        type: newTransaction.type,
+        date: new Date().toISOString(),
+        category: newTransaction.category,
+      });
+      const ui = toUITransaction(created);
+      setTransactions([ui, ...transactions]);
+    } catch (e: any) {
+      console.error('Failed to create transaction:', e);
+      Alert.alert('Error', 'Failed to save transaction. Please try again.');
+      return;
+    }
     setNewTransaction({
       type: 'expense',
       category: '',
@@ -181,44 +131,7 @@ const ExpenseTrackerApp = () => {
     setShowAddModal(false);
   };
 
-  // Helper function to create API payload (matches backend schema)
-  const createTransactionPayload = (transaction: Transaction) => {
-    return {
-      description: transaction.description,
-      amount: transaction.amount,
-      type: transaction.type,
-      date: transaction.date,
-      addedBy: transaction.addedBy,
-      category: transaction.category
-    };
-  };
-
-  // Example API call function (uncomment when ready to integrate with backend)
-  /*
-  const saveTransactionToAPI = async (transaction: Transaction) => {
-    try {
-      const payload = createTransactionPayload(transaction);
-      const response = await fetch('YOUR_API_ENDPOINT/transactions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await AsyncStorage.getItem('jwt_token')}`
-        },
-        body: JSON.stringify(payload)
-      });
-      
-      if (response.ok) {
-        const savedTransaction = await response.json();
-        return savedTransaction;
-      } else {
-        throw new Error('Failed to save transaction');
-      }
-    } catch (error) {
-      console.error('Error saving transaction:', error);
-      throw error;
-    }
-  };
-  */
+  // remove legacy sample API code – real API is wired via services
 
   const applyFilters = () => {
     let filtered = transactions;
@@ -253,8 +166,13 @@ const ExpenseTrackerApp = () => {
   };
 
   const filteredTransactions = applyFilters();
-  const todayTransactions = filteredTransactions.filter(t => t.date === 'today');
-  const yesterdayTransactions = filteredTransactions.filter(t => t.date === 'yesterday');
+  const isSameDay = (a: Date, b: Date) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  const now = new Date();
+  const today = now;
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const todayTransactions = filteredTransactions.filter(t => isSameDay(new Date(t.date as any), today));
+  const yesterdayTransactions = filteredTransactions.filter(t => isSameDay(new Date(t.date as any), yesterday));
 
   const resetFilters = () => {
     setFilters({
@@ -272,47 +190,7 @@ const ExpenseTrackerApp = () => {
     setFilters({ ...filters, categories: updatedCategories });
   };
 
-  const TransactionItem = ({ transaction }: { transaction: Transaction }) => (
-    <View style={styles.transactionItem}>
-      <View style={styles.transactionLeft}>
-        <View style={[styles.iconContainer, { backgroundColor: transaction.color }]}>
-          <Ionicons name={transaction.icon as any} size={24} color="#374151" />
-        </View>
-        <View style={styles.transactionInfo}>
-          <Text style={styles.transactionCategory}>{transaction.category}</Text>
-          <Text style={styles.transactionDescription}>{transaction.description}</Text>
-        </View>
-      </View>
-      <View style={styles.transactionRight}>
-        <Text style={[
-          styles.transactionAmount,
-          { color: transaction.type === 'income' ? '#10B981' : '#EF4444' }
-        ]}>
-          {transaction.type === 'income' ? '+' : '-'} ${transaction.amount}
-        </Text>
-        <Text style={styles.transactionTime}>{transaction.time}</Text>
-      </View>
-    </View>
-  );
-
-  const CategorySelector = () => (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
-      {categories.map((category) => (
-        <TouchableOpacity
-          key={category.name}
-          style={[
-            styles.categoryItem,
-            { backgroundColor: category.color },
-            newTransaction.category === category.name && styles.selectedCategory
-          ]}
-          onPress={() => setNewTransaction({...newTransaction, category: category.name})}
-        >
-          <Ionicons name={category.icon as any} size={20} color="#374151" />
-          <Text style={styles.categoryText}>{category.name}</Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
-  );
+  // Category selection is handled within AddTransactionModal
 
   return (
     <SafeAreaView style={styles.container}>
@@ -376,253 +254,25 @@ const ExpenseTrackerApp = () => {
       </ScrollView>
 
       {/* Add Transaction Modal */}
-      <Modal
+      <AddTransactionModal
         visible={showAddModal}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setShowAddModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add Transaction</Text>
-            
-            {/* Type Selection */}
-            <View style={styles.typeSelector}>
-              <TouchableOpacity
-                style={[
-                  styles.typeButton,
-                  newTransaction.type === 'expense' && styles.expenseSelected
-                ]}
-                onPress={() => setNewTransaction({...newTransaction, type: 'expense'})}
-              >
-                <Text style={[
-                  styles.typeButtonText,
-                  newTransaction.type === 'expense' && styles.typeButtonTextSelected
-                ]}>
-                  Expense
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.typeButton,
-                  newTransaction.type === 'income' && styles.incomeSelected
-                ]}
-                onPress={() => setNewTransaction({...newTransaction, type: 'income'})}
-              >
-                <Text style={[
-                  styles.typeButtonText,
-                  newTransaction.type === 'income' && styles.typeButtonTextSelected
-                ]}>
-                  Income
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Category Selection */}
-            <Text style={styles.inputLabel}>Category</Text>
-            <CategorySelector />
-
-            {/* Description */}
-            <Text style={styles.inputLabel}>Description</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter description"
-              value={newTransaction.description}
-              onChangeText={(text) => setNewTransaction({...newTransaction, description: text})}
-            />
-
-            {/* Amount */}
-            <Text style={styles.inputLabel}>Amount</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter amount"
-              value={newTransaction.amount}
-              onChangeText={(text) => setNewTransaction({...newTransaction, amount: text})}
-              keyboardType="numeric"
-            />
-
-            {/* Buttons */}
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => setShowAddModal(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.saveButton}
-                onPress={handleAddTransaction}
-              >
-                <Text style={styles.saveButtonText}>Add</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setShowAddModal(false)}
+        newTransaction={newTransaction}
+        setNewTransaction={setNewTransaction}
+        categories={categories}
+        onSave={handleAddTransaction}
+      />
 
       {/* Filter Modal */}
-      <Modal
+      <FilterModal
         visible={showFilterModal}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setShowFilterModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.filterModalContent}>
-            {/* Header */}
-            <View style={styles.filterHeader}>
-              <Text style={styles.filterTitle}>Filter Transaction</Text>
-              <TouchableOpacity onPress={resetFilters}>
-                <Text style={styles.resetText}>Reset</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Filter By Section */}
-            <Text style={styles.filterSectionTitle}>Filter By</Text>
-            <View style={styles.filterTypeContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.filterTypeButton,
-                  filters.type === 'income' && styles.filterTypeSelected
-                ]}
-                onPress={() => setFilters({ ...filters, type: filters.type === 'income' ? 'all' : 'income' })}
-              >
-                <Text style={[
-                  styles.filterTypeText,
-                  filters.type === 'income' && styles.filterTypeTextSelected
-                ]}>
-                  Income
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.filterTypeButton,
-                  filters.type === 'expense' && styles.filterTypeSelected
-                ]}
-                onPress={() => setFilters({ ...filters, type: filters.type === 'expense' ? 'all' : 'expense' })}
-              >
-                <Text style={[
-                  styles.filterTypeText,
-                  filters.type === 'expense' && styles.filterTypeTextSelected
-                ]}>
-                  Expense
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Sort By Section */}
-            <Text style={styles.filterSectionTitle}>Sort By</Text>
-            <View style={styles.sortOptionsContainer}>
-              <View style={styles.sortRow}>
-                <TouchableOpacity
-                  style={[
-                    styles.sortButton,
-                    filters.sortBy === 'highest' && styles.sortButtonSelected
-                  ]}
-                  onPress={() => setFilters({ ...filters, sortBy: 'highest' })}
-                >
-                  <Text style={[
-                    styles.sortButtonText,
-                    filters.sortBy === 'highest' && styles.sortButtonTextSelected
-                  ]}>
-                    Highest
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.sortButton,
-                    filters.sortBy === 'lowest' && styles.sortButtonSelected
-                  ]}
-                  onPress={() => setFilters({ ...filters, sortBy: 'lowest' })}
-                >
-                  <Text style={[
-                    styles.sortButtonText,
-                    filters.sortBy === 'lowest' && styles.sortButtonTextSelected
-                  ]}>
-                    Lowest
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.sortButton,
-                    filters.sortBy === 'newest' && styles.sortButtonSelected
-                  ]}
-                  onPress={() => setFilters({ ...filters, sortBy: 'newest' })}
-                >
-                  <Text style={[
-                    styles.sortButtonText,
-                    filters.sortBy === 'newest' && styles.sortButtonTextSelected
-                  ]}>
-                    Newest
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity
-                style={[
-                  styles.sortButton,
-                  styles.sortButtonFull,
-                  filters.sortBy === 'oldest' && styles.sortButtonSelected
-                ]}
-                onPress={() => setFilters({ ...filters, sortBy: 'oldest' })}
-              >
-                <Text style={[
-                  styles.sortButtonText,
-                  filters.sortBy === 'oldest' && styles.sortButtonTextSelected
-                ]}>
-                  Oldest
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Category Section */}
-            <Text style={styles.filterSectionTitle}>Category</Text>
-            <TouchableOpacity style={styles.categorySelector}>
-              <Text style={styles.categorySelectorText}>Choose Category</Text>
-              <View style={styles.categoryCount}>
-                <Text style={styles.categoryCountText}>{filters.categories.length} Selected</Text>
-                <Ionicons name="chevron-forward" size={16} color="#6B7280" />
-              </View>
-            </TouchableOpacity>
-
-            {/* Category Selection */}
-            <ScrollView style={styles.categoryList} showsVerticalScrollIndicator={false}>
-              {categories.map((category) => (
-                <TouchableOpacity
-                  key={category.name}
-                  style={styles.categoryOption}
-                  onPress={() => toggleCategory(category.name)}
-                >
-                  <View style={styles.categoryOptionLeft}>
-                    <View style={[styles.categoryOptionIcon, { backgroundColor: category.color }]}>
-                      <Ionicons name={category.icon as any} size={16} color="#374151" />
-                    </View>
-                    <Text style={styles.categoryOptionText}>{category.name}</Text>
-                  </View>
-                  <View style={[
-                    styles.checkbox,
-                    filters.categories.includes(category.name) && styles.checkboxSelected
-                  ]}>
-                    {filters.categories.includes(category.name) && (
-                      <Ionicons name="checkmark" size={12} color="#FFFFFF" />
-                    )}
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-
-            {/* Apply Button */}
-            <TouchableOpacity
-              style={styles.applyButton}
-              onPress={() => setShowFilterModal(false)}
-            >
-              <Text style={styles.applyButtonText}>Apply</Text>
-            </TouchableOpacity>
-
-            {/* Bottom indicator */}
-            <View style={styles.bottomIndicator} />
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setShowFilterModal(false)}
+        filters={filters}
+        setFilters={setFilters}
+        categories={categories}
+        resetFilters={resetFilters}
+        toggleCategory={toggleCategory}
+      />
     </SafeAreaView>
   );
 };

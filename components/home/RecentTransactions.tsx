@@ -1,5 +1,5 @@
 // components/home/RecentTransactions.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { Transaction } from '../../services/userService';
@@ -10,7 +10,47 @@ interface RecentTransactionsProps {
 
 export default function RecentTransactions({ transactions }: RecentTransactionsProps) {
   // Add null safety
-  const safeTransactions = transactions || [];
+  const safeTransactions = useMemo(() => transactions || [], [transactions]);
+
+  // Map category -> icon/color (Feather icon set)
+  const getIconColorForCategory = (category?: string): { icon: string; color: string } => {
+    const key = (category || '').toLowerCase();
+    switch (key) {
+      case 'shopping':
+        return { icon: 'shopping-bag', color: '#fb923c' };
+      case 'food':
+        return { icon: 'coffee', color: '#ef4444' };
+      case 'transportation':
+        return { icon: 'truck', color: '#60a5fa' };
+      case 'subscription':
+        return { icon: 'tv', color: '#8B5CF6' };
+      case 'entertainment':
+        return { icon: 'film', color: '#ec4899' };
+      case 'bills':
+        return { icon: 'file-text', color: '#f59e0b' };
+      case 'health':
+        return { icon: 'heart', color: '#10b981' };
+      case 'salary':
+      case 'income':
+        return { icon: 'dollar-sign', color: '#22c55e' };
+      case 'expense':
+        return { icon: 'arrow-down-right', color: '#ef4444' };
+      default:
+        return { icon: 'dollar-sign', color: '#6B7280' }; // neutral fallback
+    }
+  };
+
+  // Apply fallback icon/color based on category if not provided
+  const mappedTransactions = useMemo(() =>
+    safeTransactions.map((t) => {
+      const fallback = getIconColorForCategory(t.category);
+      return {
+        ...t,
+        icon: t.icon || fallback.icon,
+        color: t.color || fallback.color,
+      };
+    })
+  , [safeTransactions]);
 
   return (
     <View style={styles.sectionBox}>
@@ -19,18 +59,18 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
         <Text style={styles.seeAll}>See All</Text>
       </View>
       
-      {safeTransactions.length === 0 ? (
+      {mappedTransactions.length === 0 ? (
         <View style={styles.emptyState}>
           <Text style={styles.emptyText}>No transactions yet</Text>
         </View>
       ) : (
-        safeTransactions.map((transaction) => (
+        mappedTransactions.map((transaction) => (
           <View key={transaction.id} style={styles.txRow}>
             <View style={[styles.txIcon, { backgroundColor: transaction.color }]}>
               <Icon name={transaction.icon as any} size={20} color="#fff" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.txType}>{transaction.type}</Text>
+              <Text style={styles.txType}>{transaction.category}</Text>
               <Text style={styles.txDesc}>{transaction.description}</Text>
             </View>
             <View style={{ alignItems: 'flex-end' }}>

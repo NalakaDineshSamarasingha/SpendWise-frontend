@@ -16,7 +16,7 @@ import Animated, {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const tintColor = Colors[colorScheme ?? "light"].tint;
+  const activeColor = '#8B5CF6'; // Fixed active color to ensure visibility on white tab bar
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const animationValue = useSharedValue(0);
 
@@ -83,22 +83,42 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: tintColor,
-          tabBarStyle: styles.tabBar,
+          tabBarActiveTintColor: activeColor,
+          tabBarInactiveTintColor: Colors[colorScheme ?? 'light'].tabIconDefault,
+          tabBarShowLabel: true,
+          tabBarLabelStyle: styles.tabLabel,
+          tabBarItemStyle: styles.tabItem,
+          tabBarLabelPosition: 'below-icon',
+          tabBarIconStyle: styles.tabIcon,
+          tabBarAllowFontScaling: false,
+          tabBarHideOnKeyboard: true,
+          tabBarStyle: [styles.tabBar, { backgroundColor: '#FFFFFF' }],
         }}
       >
         <Tabs.Screen
           name="index"
           options={{
             title: "Home",
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+            tabBarIcon: ({ color, focused }) => (
+              <View style={styles.iconWrap}>
+                <View style={[styles.iconBg, focused && { backgroundColor: withOpacity(activeColor, 0.15) }]}>
+                  <IconSymbol size={focused ? 26 : 24} name="home" color={color} />
+                </View>
+              </View>
+            ),
           }}
         />
         <Tabs.Screen
           name="explore"
           options={{
             title: "Transaction",
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="link" color={color} />,
+            tabBarIcon: ({ color, focused }) => (
+              <View style={styles.iconWrap}>
+                <View style={[styles.iconBg, focused && { backgroundColor: withOpacity(activeColor, 0.15) }]}>
+                  <IconSymbol size={focused ? 26 : 24} name="receipt" color={color} />
+                </View>
+              </View>
+            ),
           }}
         />
 
@@ -118,14 +138,26 @@ export default function TabLayout() {
           name="budget"
           options={{
             title: "Budget",
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="pie-chart" color={color} />,
+            tabBarIcon: ({ color, focused }) => (
+              <View style={styles.iconWrap}>
+                <View style={[styles.iconBg, focused && { backgroundColor: withOpacity(activeColor, 0.15) }]}>
+                  <IconSymbol size={focused ? 26 : 24} name="donut-large" color={color} />
+                </View>
+              </View>
+            ),
           }}
         />
         <Tabs.Screen
           name="profile"
           options={{
             title: "Profile",
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="user" color={color} />,
+            tabBarIcon: ({ color, focused }) => (
+              <View style={styles.iconWrap}>
+                <View style={[styles.iconBg, focused && { backgroundColor: withOpacity(activeColor, 0.15) }]}>
+                  <IconSymbol size={focused ? 26 : 24} name="person" color={color} />
+                </View>
+              </View>
+            ),
           }}
         />
       </Tabs>
@@ -210,12 +242,24 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    height: 70,
+    height: 72,
     paddingBottom: 10,
     paddingTop: 10,
     borderTopWidth: 0,
-    backgroundColor: "#fff",
-    elevation: 5,
+    backgroundColor: '#FFFFFF',
+    elevation: 4,
+  },
+  tabLabel: {
+    fontSize: 11,
+    lineHeight: 10,
+    marginTop: 2,
+    includeFontPadding: false as any,
+  },
+  tabItem: {
+    paddingVertical: 6,
+  },
+  tabIcon: {
+    paddingBottom: 0,
   },
   addButtonContainer: {
     top: -25, // lift above tab bar
@@ -235,6 +279,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
+  },
+  iconWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 0,
+  },
+  iconBg: {
+    padding: 0,
+    borderRadius: 20,
   },
   backdrop: {
     position: 'absolute',
@@ -284,3 +337,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+function withOpacity(hex: string, opacity: number) {
+  // Support #RGB and #RRGGBB
+  let h = hex.trim();
+  if (!h.startsWith('#')) return hex;
+  if (h.length === 4) {
+    // #RGB -> #RRGGBB
+    h = `#${h[1]}${h[1]}${h[2]}${h[2]}${h[3]}${h[3]}`;
+  }
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
+  if (!m) return hex;
+  const r = parseInt(m[1], 16);
+  const g = parseInt(m[2], 16);
+  const b = parseInt(m[3], 16);
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}

@@ -5,8 +5,7 @@ import { SymbolViewProps, SymbolWeight } from 'expo-symbols';
 import { ComponentProps } from 'react';
 import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
 
-type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
-type IconSymbolName = keyof typeof MAPPING;
+type IconMapping = Record<SymbolViewProps['name'] | string, ComponentProps<typeof MaterialIcons>['name']>;
 
 /**
  * Add your SF Symbols to Material Icons mappings here.
@@ -14,6 +13,7 @@ type IconSymbolName = keyof typeof MAPPING;
  * - see SF Symbols in the [SF Symbols](https://developer.apple.com/sf-symbols/) app.
  */
 const MAPPING = {
+  // Existing
   'house.fill': 'home',
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
@@ -22,6 +22,23 @@ const MAPPING = {
   'plus': 'add',
   'pie-chart': 'pie-chart',
   'user': 'person',
+  // Additional common symbols used in app
+  'person': 'person',
+  'person.circle': 'account-circle',
+  'pencil': 'edit',
+  'gear': 'settings',
+  'arrow.up.doc': 'file-upload',
+  'rectangle.portrait.and.arrow.right': 'logout',
+  'arrow.up.right': 'trending-up',
+  'arrow.down.right': 'trending-down',
+  'hourglass': 'hourglass-empty',
+  // New aliases to avoid invalid names causing blank/white icons
+  'home': 'home',
+  'receipt-long': 'receipt',
+  'receipt': 'receipt',
+  'donut-large': 'donut-large',
+  'calendar': 'calendar-today',
+  'calendar-today': 'calendar-today',
 } as unknown as IconMapping;
 
 /**
@@ -35,11 +52,12 @@ export function IconSymbol({
   color,
   style,
 }: {
-  name: IconSymbolName;
+  name: string;
   size?: number;
   color: string | OpaqueColorValue;
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
 }) {
-  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+  const materialName = (MAPPING as any)[name] ?? (name as ComponentProps<typeof MaterialIcons>['name']);
+  return <MaterialIcons color={color} size={size} name={materialName} style={style} />;
 }
