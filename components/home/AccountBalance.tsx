@@ -20,7 +20,7 @@ export default function AccountBalance({ balance, income, expenses }: AccountBal
       {/* Account Balance */}
       <View style={styles.balanceBox}>
         <Text style={styles.balanceLabel}>Account Balance</Text>
-        <Text style={styles.balance}>{safeBalance.toLocaleString()}LKR</Text>
+        <Text style={styles.balance}>{safeBalance.toLocaleString()}<Text style={{fontSize: 18, color: '#888'}}>LKR</Text></Text>
       </View>
       
       {/* Income/Expenses Cards */}

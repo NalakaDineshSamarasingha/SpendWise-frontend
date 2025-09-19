@@ -242,7 +242,7 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    height: 72,
+    height: 75,
     paddingBottom: 10,
     paddingTop: 10,
     borderTopWidth: 0,
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontSize: 11,
-    lineHeight: 10,
+    lineHeight: 15,
     marginTop: 2,
     includeFontPadding: false as any,
   },
