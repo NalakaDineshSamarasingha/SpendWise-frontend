@@ -30,9 +30,7 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
     return (
       <View style={styles.container}>
         <View style={styles.logoSection}>
-          <Image source={require('@/assets/images/icon.png')} style={styles.logo} />
-          <Text style={styles.appName}>SpendWise</Text>
-          <Text style={styles.tagline}>Smart Financial Tracking</Text>
+          <Image source={require('@/assets/images/spendwise.png')} style={styles.logo} />
         </View>
         <View style={styles.welcomeSection}>
           <Text style={styles.welcomeTitle}>Welcome Back</Text>
@@ -65,27 +63,14 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 200,
+    height: 200,
     borderRadius: 20,
     marginBottom: 20,
   },
-  appName: {
-    fontSize: 36,
-    fontWeight: '700',
-    color: '#222',
-    marginBottom: 8,
-    letterSpacing: -1,
-  },
-  tagline: {
-    fontSize: 16,
-    fontWeight: '400',
-    color: '#666',
-    opacity: 0.9,
-  },
   welcomeSection: {
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: 40,
   },
   welcomeTitle: {
     fontSize: 28,
