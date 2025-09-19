@@ -36,10 +36,7 @@ export default function GreetingHeader({ name, profileImage }: GreetingHeaderPro
             </Text>
           )}
         </View>
-        <View style={styles.monthBox}>
-          <Text style={styles.monthText}>October</Text>
-          <Icon name="chevron-down" size={16} color="#8B5CF6" />
-        </View>
+       
         <Icon name="bell" size={24} color="#8B5CF6" />
       </View>
     </>

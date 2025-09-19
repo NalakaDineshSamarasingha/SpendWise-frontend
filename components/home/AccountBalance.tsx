@@ -31,7 +31,7 @@ export default function AccountBalance({ balance, income, expenses }: AccountBal
           </View>
           <View>
             <Text style={styles.cardLabel}>Income</Text>
-            <Text style={styles.cardAmount}>{safeIncome.toLocaleString()}LKR</Text>
+            <Text style={styles.cardAmount}>{safeIncome.toLocaleString()}<Text style={{fontSize: 8, color: '#fff'}}>LKR</Text></Text>
           </View>
         </View>
         <View style={[styles.card, { backgroundColor: '#ef4444' }]}> 
@@ -40,7 +40,7 @@ export default function AccountBalance({ balance, income, expenses }: AccountBal
           </View>
           <View>
             <Text style={styles.cardLabel}>Expenses</Text>
-            <Text style={styles.cardAmount}>{safeExpenses.toLocaleString()}LKR</Text>
+            <Text style={styles.cardAmount}>{safeExpenses.toLocaleString()}<Text style={{fontSize: 8, color: '#fff'}}>LKR</Text></Text>
           </View>
         </View>
       </View>

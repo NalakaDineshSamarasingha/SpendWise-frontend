@@ -74,8 +74,14 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
               <Text style={styles.txDesc}>{transaction.description}</Text>
             </View>
             <View style={{ alignItems: 'flex-end' }}>
-              <Text style={styles.txAmountNeg}>
-                {transaction.amount < 0 ? '- ' : '+ '}${Math.abs(transaction.amount)}
+              <Text
+                style={[
+                  styles.txAmountNeg,
+                  transaction.type === 'income' && { color: '#22c55e' }, // green for income
+                  transaction.type !== 'income' && { color: '#ef4444' }  // red for expense
+                ]}
+              >
+                {transaction.type === 'income'? '+ ' : '- '}${Math.abs(transaction.amount)}
               </Text>
               <Text style={styles.txTime}>{transaction.time}</Text>
             </View>
@@ -145,7 +151,6 @@ const styles = StyleSheet.create({
     fontSize: 12 
   },
   txAmountNeg: { 
-    color: '#ef4444', 
     fontWeight: 'bold', 
     fontSize: 16 
   },
