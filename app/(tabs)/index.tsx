@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { CreateAccountPrompt, HomeDashboard, LoadingScreen } from '../../components/home';
 import { User, UserData, userService } from '../../services/userService';
 
@@ -9,6 +9,7 @@ interface AppState {
   hasAccount: boolean;
   userData: UserData | null;
   isCreatingAccount: boolean;
+  refreshing: boolean; // added
 }
 
 export default function SpendWiseHomeScreen() {
@@ -18,6 +19,7 @@ export default function SpendWiseHomeScreen() {
     hasAccount: false,
     userData: null,
     isCreatingAccount: false,
+    refreshing: false, // added
   });
 
   const checkUserAccountStatus = useCallback(async () => {
@@ -106,6 +108,13 @@ export default function SpendWiseHomeScreen() {
     }
   }, [state.user, checkUserAccountStatus]);
 
+  const handleRefresh = useCallback(async () => {
+    if (state.loading || state.isCreatingAccount) return;
+    setState(prev => ({ ...prev, refreshing: true }));
+    await checkUserAccountStatus();
+    setState(prev => ({ ...prev, refreshing: false }));
+  }, [state.loading, state.isCreatingAccount, checkUserAccountStatus]);
+
   useEffect(() => {
     checkUserAccountStatus();
   }, [checkUserAccountStatus]);
@@ -138,10 +147,23 @@ export default function SpendWiseHomeScreen() {
 
   // User has account, show dashboard
   return (
-    <HomeDashboard 
-      user={state.user} 
-      userData={state.userData!} 
-    />
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      refreshControl={
+        <RefreshControl
+          refreshing={state.refreshing}
+          onRefresh={handleRefresh}
+          tintColor="#f59e42"
+          colors={['#f59e42']}
+        />
+      }
+    >
+      <HomeDashboard 
+        user={state.user} 
+        userData={state.userData!} 
+      />
+    </ScrollView>
   );
 }
 
@@ -149,5 +171,8 @@ const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     backgroundColor: '#f8fafc' 
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
 });

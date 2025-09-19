@@ -209,9 +209,7 @@ const ExpenseTrackerApp = () => {
           >
             <Ionicons name="funnel-outline" size={20} color="#6B7280" />
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="menu" size={24} color="#6B7280" />
-          </TouchableOpacity>
+      
         </View>
       </View>
 
