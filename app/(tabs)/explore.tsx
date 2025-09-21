@@ -49,9 +49,12 @@ const ExpenseTrackerApp = () => {
     { name: 'Transportation', icon: 'car-outline', color: '#BFDBFE' },
     { name: 'Subscription', icon: 'tv-outline', color: '#DDD6FE' },
     { name: 'Entertainment', icon: 'game-controller-outline', color: '#FBCFE8' },
+    { name: 'House Hold', icon: 'game-controller-outline', color: '#FBCFE8' },
     { name: 'Bills', icon: 'receipt-outline', color: '#FEF3C7' },
     { name: 'Health', icon: 'medical-outline', color: '#A7F3D0' },
     { name: 'Salary', icon: 'cash-outline', color: '#BBF7D0' },
+    { name: 'Pocket Money', icon: 'cash-outline', color: '#BBF7D0' },
+    { name: 'Gift', icon: 'cash-outline', color: '#BBF7D0' },
   ]), []);
 
   const categoryMap = useMemo(() => {
