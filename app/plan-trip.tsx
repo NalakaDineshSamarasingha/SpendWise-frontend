@@ -50,6 +50,17 @@ export default function PlanTripScreen() {
         </TouchableOpacity>
         <Text style={styles.title}>Plan Trip</Text>
       </View>
+      <View style={styles.sectionHeaderBox}>
+        <Text style={styles.sectionHeader}>Travel Destinations</Text>
+      </View>
+      <TouchableOpacity
+        style={styles.addBtn}
+        onPress={() => {
+          /* TODO: handle add destination */
+        }}
+      >
+        <Text style={styles.addBtnText}>＋</Text>
+      </TouchableOpacity>
       {body}
     </SafeAreaView>
   );
@@ -58,14 +69,14 @@ export default function PlanTripScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#ffffffff",
     paddingHorizontal: 20,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 20,
-    marginTop: 10,
+    marginTop: 50,
   },
   backBtn: {
     paddingVertical: 6,
@@ -78,4 +89,40 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: "700", color: "#111827" },
   content: { flex: 1, justifyContent: "center", alignItems: "center" },
   placeholder: { textAlign: "center", color: "#64748B", lineHeight: 20 },
+  sectionHeaderBox: {
+    backgroundColor: "#DDD6FE",
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    alignSelf: "flex-start",
+    marginBottom: 16,
+    marginLeft: 2,
+    width: "100%",
+  },
+  sectionHeader: {
+    fontSize: 25,
+    fontWeight: "600",
+    color: "#7C3AED",
+  },
+  addBtn: {
+    alignSelf: "flex-start",
+    marginLeft: 2,
+    marginBottom: 10,
+    backgroundColor: "#7efa86ff",
+    borderRadius: 50,
+    width: 54,
+    height: 54,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  addBtnText: {
+    fontSize: 38,
+    color: "#c48b8bff",
+    fontWeight: "bold",
+    lineHeight: 44,
+  },
 });
