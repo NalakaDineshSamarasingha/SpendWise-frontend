@@ -7,7 +7,6 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   interpolate,
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -19,6 +18,7 @@ export default function TabLayout() {
   const activeColor = "#8B5CF6";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const animationValue = useSharedValue(0);
+  const [isNavigating, setIsNavigating] = useState(false); // added earlier / keep
 
   // Toggle radial menu
   const toggleMenu = () => {
@@ -32,22 +32,28 @@ export default function TabLayout() {
     } else {
       animationValue.value = withTiming(0, { duration: 200 }, (finished) => {
         if (finished) {
-          runOnJS(setIsMenuOpen)(false);
+          setIsMenuOpen(false);
         }
       });
     }
   };
 
-  // Navigate after closing menu
-  const navigateAfterClose = (
-    path: "/plan-trip" | "/save-goal" | "/plan-big-day"
-  ) => {
-    animationValue.value = withTiming(0, { duration: 200 }, (finished) => {
-      if (finished) {
-        runOnJS(() => {
-          setIsMenuOpen(false);
-          router.replace(path as any);
-        })();
+  // REPLACED: safer navigation without runOnJS callback inside worklet
+  const navigateAfterClose = (path: string) => {
+    if (isNavigating) return;
+    setIsNavigating(true);
+    // start closing animation immediately
+    animationValue.value = withTiming(0, { duration: 140 });
+    // hide menu state so UI unmounts overlay before navigation
+    setIsMenuOpen(false);
+    // defer navigation to next frame to avoid concurrent layout during animation
+    requestAnimationFrame(() => {
+      try {
+        router.push(path as any);
+      } catch (e) {
+        console.warn("Navigation failed:", e);
+      } finally {
+        setTimeout(() => setIsNavigating(false), 250);
       }
     });
   };
@@ -91,10 +97,15 @@ export default function TabLayout() {
         opacity: animationValue.value,
       };
     });
-
     return (
       <Animated.View style={[styles.menuOption, animatedStyle]}>
-        <TouchableOpacity onPress={onPress} style={styles.menuOptionButton}>
+        <TouchableOpacity
+          onPress={() => {
+            if (!isNavigating) onPress();
+          }}
+          style={styles.menuOptionButton}
+          disabled={isNavigating}
+        >
           <Text style={styles.menuOptionText}>{title}</Text>
         </TouchableOpacity>
       </Animated.View>
@@ -357,3 +368,4 @@ function withOpacity(hex: string, opacity: number) {
   const b = parseInt(m[3], 16);
   return `rgba(${r},${g},${b},${opacity})`;
 }
+
