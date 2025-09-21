@@ -2,7 +2,7 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { Tabs } from "expo-router";
+import { Tabs, router } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
@@ -11,16 +11,16 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming
+  withTiming,
 } from "react-native-reanimated";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const activeColor = '#8B5CF6'; // Fixed active color to ensure visibility on white tab bar
+  const activeColor = "#8B5CF6";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const animationValue = useSharedValue(0);
 
-  // Toggle menu function
+  // Toggle radial menu
   const toggleMenu = () => {
     if (!isMenuOpen) {
       setIsMenuOpen(true);
@@ -30,10 +30,7 @@ export default function TabLayout() {
         mass: 1,
       });
     } else {
-      // Add exit animation with callback to close menu
-      animationValue.value = withTiming(0, {
-        duration: 200,
-      }, (finished) => {
+      animationValue.value = withTiming(0, { duration: 200 }, (finished) => {
         if (finished) {
           runOnJS(setIsMenuOpen)(false);
         }
@@ -41,8 +38,22 @@ export default function TabLayout() {
     }
   };
 
-  // Custom central "+" button
-  const AddButton = ({ children }: any) => (
+  // Navigate after closing menu
+  const navigateAfterClose = (
+    path: "/plan-trip" | "/save-goal" | "/plan-big-day"
+  ) => {
+    animationValue.value = withTiming(0, { duration: 200 }, (finished) => {
+      if (finished) {
+        runOnJS(() => {
+          setIsMenuOpen(false);
+          router.replace(path as any);
+        })();
+      }
+    });
+  };
+
+  // Central "+" button
+  const AddButton = ({ children }: { children: React.ReactNode }) => (
     <TouchableOpacity
       style={styles.addButtonContainer}
       activeOpacity={0.7}
@@ -52,19 +63,31 @@ export default function TabLayout() {
     </TouchableOpacity>
   );
 
-  // Animated menu items
-  const MenuOption = ({ title, angle, onPress }: { title: string; angle: number; onPress: () => void }) => {
+  // Animated menu option
+  const MenuOption = ({
+    title,
+    angle,
+    onPress,
+  }: {
+    title: string;
+    angle: number;
+    onPress: () => void;
+  }) => {
     const animatedStyle = useAnimatedStyle(() => {
       const scale = interpolate(animationValue.value, [0, 1], [0, 1]);
-      const translateX = interpolate(animationValue.value, [0, 1], [0, Math.cos(angle) * 120]);
-      const translateY = interpolate(animationValue.value, [0, 1], [0, Math.sin(angle) * 120]);
-      
+      const translateX = interpolate(
+        animationValue.value,
+        [0, 1],
+        [0, Math.cos(angle) * 120]
+      );
+      const translateY = interpolate(
+        animationValue.value,
+        [0, 1],
+        [0, Math.sin(angle) * 120]
+      );
+
       return {
-        transform: [
-          { translateX },
-          { translateY },
-          { scale }
-        ],
+        transform: [{ translateX }, { translateY }, { scale }],
         opacity: animationValue.value,
       };
     });
@@ -84,15 +107,16 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: activeColor,
-          tabBarInactiveTintColor: Colors[colorScheme ?? 'light'].tabIconDefault,
+          tabBarInactiveTintColor:
+            Colors[colorScheme ?? "light"].tabIconDefault,
           tabBarShowLabel: true,
           tabBarLabelStyle: styles.tabLabel,
           tabBarItemStyle: styles.tabItem,
-          tabBarLabelPosition: 'below-icon',
+          tabBarLabelPosition: "below-icon",
           tabBarIconStyle: styles.tabIcon,
           tabBarAllowFontScaling: false,
           tabBarHideOnKeyboard: true,
-          tabBarStyle: [styles.tabBar, { backgroundColor: '#FFFFFF' }],
+          tabBarStyle: [styles.tabBar, { backgroundColor: "#FFFFFF" }],
         }}
       >
         <Tabs.Screen
@@ -101,8 +125,19 @@ export default function TabLayout() {
             title: "Home",
             tabBarIcon: ({ color, focused }) => (
               <View style={styles.iconWrap}>
-                <View style={[styles.iconBg, focused && { backgroundColor: withOpacity(activeColor, 0.15) }]}>
-                  <IconSymbol size={focused ? 26 : 24} name="home" color={color} />
+                <View
+                  style={[
+                    styles.iconBg,
+                    focused && {
+                      backgroundColor: withOpacity(activeColor, 0.15),
+                    },
+                  ]}
+                >
+                  <IconSymbol
+                    size={focused ? 26 : 24}
+                    name="home"
+                    color={color}
+                  />
                 </View>
               </View>
             ),
@@ -114,15 +149,24 @@ export default function TabLayout() {
             title: "Transaction",
             tabBarIcon: ({ color, focused }) => (
               <View style={styles.iconWrap}>
-                <View style={[styles.iconBg, focused && { backgroundColor: withOpacity(activeColor, 0.15) }]}>
-                  <IconSymbol size={focused ? 26 : 24} name="receipt" color={color} />
+                <View
+                  style={[
+                    styles.iconBg,
+                    focused && {
+                      backgroundColor: withOpacity(activeColor, 0.15),
+                    },
+                  ]}
+                >
+                  <IconSymbol
+                    size={focused ? 26 : 24}
+                    name="receipt"
+                    color={color}
+                  />
                 </View>
               </View>
             ),
           }}
         />
-
-        {/* Middle Add button */}
         <Tabs.Screen
           name="add"
           options={{
@@ -133,15 +177,25 @@ export default function TabLayout() {
             ),
           }}
         />
-
         <Tabs.Screen
           name="budget"
           options={{
             title: "Budget",
             tabBarIcon: ({ color, focused }) => (
               <View style={styles.iconWrap}>
-                <View style={[styles.iconBg, focused && { backgroundColor: withOpacity(activeColor, 0.15) }]}>
-                  <IconSymbol size={focused ? 26 : 24} name="donut-large" color={color} />
+                <View
+                  style={[
+                    styles.iconBg,
+                    focused && {
+                      backgroundColor: withOpacity(activeColor, 0.15),
+                    },
+                  ]}
+                >
+                  <IconSymbol
+                    size={focused ? 26 : 24}
+                    name="donut-large"
+                    color={color}
+                  />
                 </View>
               </View>
             ),
@@ -153,84 +207,53 @@ export default function TabLayout() {
             title: "Profile",
             tabBarIcon: ({ color, focused }) => (
               <View style={styles.iconWrap}>
-                <View style={[styles.iconBg, focused && { backgroundColor: withOpacity(activeColor, 0.15) }]}>
-                  <IconSymbol size={focused ? 26 : 24} name="person" color={color} />
+                <View
+                  style={[
+                    styles.iconBg,
+                    focused && {
+                      backgroundColor: withOpacity(activeColor, 0.15),
+                    },
+                  ]}
+                >
+                  <IconSymbol
+                    size={focused ? 26 : 24}
+                    name="person"
+                    color={color}
+                  />
                 </View>
               </View>
             ),
           }}
         />
       </Tabs>
-      
-      {/* Animated radial menu overlay */}
+
+      {/* Radial Menu Overlay */}
       {isMenuOpen && (
         <>
-          {/* Animated backdrop overlay */}
-          <Animated.View 
-            style={[
-              styles.backdrop,
-              {
-                opacity: animationValue,
-              }
-            ]}
-          >
-            <TouchableOpacity 
+          <Animated.View style={[styles.backdrop, { opacity: animationValue }]}>
+            <TouchableOpacity
               style={{ flex: 1 }}
               activeOpacity={1}
-              onPress={() => {
-                animationValue.value = withTiming(0, {
-                  duration: 200,
-                }, (finished) => {
-                  if (finished) {
-                    runOnJS(setIsMenuOpen)(false);
-                  }
-                });
-              }}
+              onPress={toggleMenu}
             />
           </Animated.View>
+
           <View style={styles.menuOverlay}>
             <View style={styles.menuContainer}>
-              <MenuOption 
-                title="Plan Trip" 
-                angle={-Math.PI / 6.2} 
-                onPress={() => {
-                  animationValue.value = withTiming(0, {
-                    duration: 200,
-                  }, (finished) => {
-                    if (finished) {
-                      runOnJS(setIsMenuOpen)(false);
-                      // Handle Plan Trip action
-                    }
-                  });
-                }} 
+              <MenuOption
+                title="Plan Trip"
+                angle={-Math.PI / 6.2}
+                onPress={() => navigateAfterClose("/plan-trip")}
               />
-              <MenuOption 
-                title="Save Goal" 
-                angle={-Math.PI / 2} 
-                onPress={() => {
-                  animationValue.value = withTiming(0, {
-                    duration: 200,
-                  }, (finished) => {
-                    if (finished) {
-                      runOnJS(setIsMenuOpen)(false);
-                      // Handle Save Goal action
-                    }
-                  });
-                }} 
+              <MenuOption
+                title="Save Goal"
+                angle={-Math.PI / 2}
+                onPress={() => navigateAfterClose("/save-goal")}
               />
-              <MenuOption 
-                title="Plan Big Day" 
-                angle={-Math.PI / 1.2} 
-                onPress={() => {
-                  animationValue.value = withTiming(0, {
-                    duration: 200,
-                  }, (finished) => {
-                    if (finished) {
-                      runOnJS(setIsMenuOpen)(false);
-                      // Handle Plan Big Day action
-                    }
-                  });
-                }} 
+              <MenuOption
+                title="Plan Big Day"
+                angle={-Math.PI / 1.2}
+                onPress={() => navigateAfterClose("/plan-big-day")}
               />
             </View>
           </View>
@@ -246,7 +269,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingTop: 10,
     borderTopWidth: 0,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     elevation: 4,
   },
   tabLabel: {
@@ -255,14 +278,10 @@ const styles = StyleSheet.create({
     marginTop: 2,
     includeFontPadding: false as any,
   },
-  tabItem: {
-    paddingVertical: 6,
-  },
-  tabIcon: {
-    paddingBottom: 0,
-  },
+  tabItem: { paddingVertical: 6 },
+  tabIcon: { paddingBottom: 0 },
   addButtonContainer: {
-    top: -25, // lift above tab bar
+    top: -25,
     justifyContent: "center",
     alignItems: "center",
     flex: 1,
@@ -271,7 +290,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "green", // your primary color
+    backgroundColor: "green",
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
@@ -280,76 +299,61 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
-  iconWrap: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 0,
-  },
-  iconBg: {
-    padding: 0,
-    borderRadius: 20,
-  },
+  iconWrap: { alignItems: "center", justifyContent: "center", marginBottom: 0 },
+  iconBg: { padding: 0, borderRadius: 20 },
   backdrop: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: "rgba(0,0,0,0.3)",
   },
   menuOverlay: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 35,
     left: 0,
     right: 0,
     height: 250,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    pointerEvents: 'box-none',
+    justifyContent: "flex-end",
+    alignItems: "center",
+    pointerEvents: "box-none",
   },
   menuContainer: {
-    position: 'relative',
+    position: "relative",
     width: 300,
     height: 250,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    justifyContent: "flex-end",
+    alignItems: "center",
     paddingBottom: 50,
   },
   menuOption: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
   },
   menuOptionButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
   },
-  menuOptionText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
+  menuOptionText: { color: "white", fontSize: 12, fontWeight: "bold" },
 });
 
 function withOpacity(hex: string, opacity: number) {
-  // Support #RGB and #RRGGBB
   let h = hex.trim();
-  if (!h.startsWith('#')) return hex;
-  if (h.length === 4) {
-    // #RGB -> #RRGGBB
-    h = `#${h[1]}${h[1]}${h[2]}${h[2]}${h[3]}${h[3]}`;
-  }
+  if (!h.startsWith("#")) return hex;
+  if (h.length === 4) h = `#${h[1]}${h[1]}${h[2]}${h[2]}${h[3]}${h[3]}`;
   const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
   if (!m) return hex;
   const r = parseInt(m[1], 16);
   const g = parseInt(m[2], 16);
   const b = parseInt(m[3], 16);
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  return `rgba(${r},${g},${b},${opacity})`;
 }
