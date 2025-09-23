@@ -1,57 +1,117 @@
-// components/home/HomeDashboard.tsx
-import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { ScrollView, StyleSheet, Text, View, SafeAreaView, RefreshControl } from 'react-native';
 import { User, UserData } from '../../services/userService';
-import AccountBalance from './AccountBalance';
 import GreetingHeader from './GreetingHeader';
-import RecentTransactions from './RecentTransactions';
+import AccountBalance from './AccountBalance';
 import SpendFrequency from './SpendFrequency';
+import RecentTransactions from './RecentTransactions';
 
 interface HomeDashboardProps {
   user: User;
   userData: UserData;
+  onRefresh?: () => Promise<void>; // optional refresh callback from parent
 }
 
-export default function HomeDashboard({ user, userData }: HomeDashboardProps) {
-  // Add null safety for userData
+export default function HomeDashboard({ user, userData, onRefresh }: HomeDashboardProps) {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = useCallback(async () => {
+    if (onRefresh) {
+      setRefreshing(true);
+      await onRefresh();
+      setRefreshing(false);
+    }
+  }, [onRefresh]);
+
   if (!userData) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <GreetingHeader name={user.name} profileImage={user.picture} />
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>Unable to load account data</Text>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <GreetingHeader name={user.name} profileImage={user.picture} />
-      
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <AccountBalance 
+    <SafeAreaView style={styles.container}>
+      {/* Top fixed part */}
+      <View style={styles.topContainer}>
+        <GreetingHeader name={user.name} profileImage={user.picture} />
+        <AccountBalance
           balance={userData.accountBalance}
           income={userData.income}
           expenses={userData.expenses}
         />
-        
-        <SpendFrequency />
-        
+      </View>
+
+      <ScrollView
+        // style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        stickyHeaderIndices={[0, 2]} 
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor="#f59e42"
+            colors={['#f59e42']}
+          />
+        }
+      >
+        {/* Sticky Header: Spend Frequently */}
+        <View style={styles.recentHeaderFixed}>
+          <Text style={styles.sectionTitle} numberOfLines={1} ellipsizeMode="tail">
+            Spend Frequently
+          </Text>
+        </View>
+
+        {/* SpendFrequency Component */}
+        <SpendFrequency transactions={userData.transactions}/>
+
+        {/* Sticky Header: Recent Transactions */}
+        <View style={styles.recentHeaderFixed}>
+          <Text style={styles.sectionTitle} numberOfLines={1} ellipsizeMode="tail">
+            Recent Transactions
+          </Text>
+        </View>
+
+        {/* Transactions List */}
         <RecentTransactions transactions={userData.transactions} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#f8fafc' 
+  container: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
   },
-  scrollContent: { 
-    paddingBottom: 100, 
-    paddingTop: 0 
+  topContainer: {},
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 100,
+  },
+  recentHeaderFixed: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: '#f8fafc',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#222',
+  },
+  seeAll: {
+    color: '#8B5CF6',
+    fontWeight: 'bold',
   },
   errorContainer: {
     flex: 1,

@@ -1,46 +1,15 @@
-// components/home/RecentTransactions.tsx
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { Transaction } from '../../services/userService';
+import { getIconColorForCategory } from '../../utils/categoryMap';
 
 interface RecentTransactionsProps {
   transactions: Transaction[];
 }
 
 export default function RecentTransactions({ transactions }: RecentTransactionsProps) {
-  // Add null safety
   const safeTransactions = useMemo(() => transactions || [], [transactions]);
-
-  // Map category -> icon/color (Feather icon set)
-  const getIconColorForCategory = (category?: string): { icon: string; color: string } => {
-    const key = (category || '').toLowerCase();
-    switch (key) {
-      case 'shopping':
-        return { icon: 'shopping-bag', color: '#fb923c' };
-      case 'food':
-        return { icon: 'coffee', color: '#ef4444' };
-      case 'transportation':
-        return { icon: 'truck', color: '#60a5fa' };
-      case 'subscription':
-        return { icon: 'tv', color: '#8B5CF6' };
-      case 'entertainment':
-        return { icon: 'film', color: '#ec4899' };
-      case 'bills':
-        return { icon: 'file-text', color: '#f59e0b' };
-      case 'health':
-        return { icon: 'heart', color: '#10b981' };
-      case 'salary':
-      case 'income':
-        return { icon: 'dollar-sign', color: '#22c55e' };
-      case 'expense':
-        return { icon: 'arrow-down-right', color: '#ef4444' };
-      default:
-        return { icon: 'dollar-sign', color: '#6B7280' }; // neutral fallback
-    }
-  };
-
-  // Apply fallback icon/color based on category if not provided
   const mappedTransactions = useMemo(() =>
     safeTransactions.map((t) => {
       const fallback = getIconColorForCategory(t.category);
@@ -54,43 +23,46 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
 
   return (
     <View style={styles.sectionBox}>
-      <View style={styles.recentHeader}>
-        <Text style={styles.sectionTitle}>Recent Transaction</Text>
-        <Text style={styles.seeAll}>See All</Text>
-      </View>
-      
-      {mappedTransactions.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>No transactions yet</Text>
-        </View>
-      ) : (
-        mappedTransactions.map((transaction) => (
-          <View key={transaction.id} style={styles.txRow}>
-            <View style={[styles.txIcon, { backgroundColor: transaction.color }]}>
-              <Icon name={transaction.icon as any} size={20} color="#fff" />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.txType}>{transaction.category}</Text>
-              <Text style={styles.txDesc}>{transaction.description}</Text>
-              {transaction.addedByName && (
-                <Text style={styles.txBy}>by {transaction.addedByName}</Text>
-              )}
-            </View>
-            <View style={{ alignItems: 'flex-end' }}>
-              <Text
-                style={[
-                  styles.txAmountNeg,
-                  transaction.type === 'income' && { color: '#22c55e' }, // green for income
-                  transaction.type !== 'income' && { color: '#ef4444' }  // red for expense
-                ]}
-              >
-                {transaction.type === 'income'? '+ ' : '- '}${Math.abs(transaction.amount)}
-              </Text>
-              <Text style={styles.txTime}>{transaction.time}</Text>
-            </View>
+
+      {/* Scrollable transactions */}
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={{ paddingBottom: 20 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {mappedTransactions.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>No transactions yet</Text>
           </View>
-        ))
-      )}
+        ) : (
+          mappedTransactions.map((transaction) => (
+            <View key={transaction.id} style={styles.txRow}>
+              <View style={[styles.txIcon, { backgroundColor: transaction.color }]}>
+                <Icon name={transaction.icon as any} size={20} color="#fff" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.txType}>{transaction.category}</Text>
+                <Text style={styles.txDesc}>{transaction.description}</Text>
+                {transaction.addedByName && (
+                  <Text style={styles.txBy}>by {transaction.addedByName}</Text>
+                )}
+              </View>
+              <View style={{ alignItems: 'flex-end' }}>
+                <Text
+                  style={[
+                    styles.txAmountNeg,
+                    transaction.type === 'income' && { color: '#22c55e' },
+                    transaction.type !== 'income' && { color: '#ef4444' }
+                  ]}
+                >
+                  {transaction.type === 'income'? '+ ' : '- '}${Math.abs(transaction.amount)}
+                </Text>
+                <Text style={styles.txTime}>{transaction.time}</Text>
+              </View>
+            </View>
+          ))
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -98,19 +70,22 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
 const styles = StyleSheet.create({
   sectionBox: { 
     marginHorizontal: 20, 
-    marginBottom: 24 
+    marginBottom: 24,
+    flex: 1, // allow ScrollView to fill remaining space
+  },
+  scrollContainer: {
+    flex: 1,
   },
   sectionTitle: { 
     fontSize: 18, 
     fontWeight: 'bold', 
-    color: '#222', 
-    marginBottom: 12 
+    color: '#222' 
   },
   recentHeader: { 
     flexDirection: 'row', 
     justifyContent: 'space-between', 
     alignItems: 'center', 
-    marginBottom: 8 
+    marginBottom: 12 
   },
   seeAll: { 
     color: '#8B5CF6', 

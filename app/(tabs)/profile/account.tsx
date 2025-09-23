@@ -41,7 +41,7 @@ export default function AccountCollaborators() {
   const [suggestions, setSuggestions] = useState<Collaborator[]>([]);
   const [suggestLoading, setSuggestLoading] = useState(false);
   const [addingMemberEmail, setAddingMemberEmail] = useState<string | null>(null);
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceRef = useRef<number | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const lastQueryRef = useRef("");
 
@@ -53,7 +53,6 @@ export default function AccountCollaborators() {
 
   const fetchCollaborators = useCallback(async () => {
     try {
-      if (DEBUG) console.log("[Collaborators] fetch start");
       setError(null);
       const token = await getToken();
       if (!token) throw new Error("Missing auth token");
@@ -61,7 +60,6 @@ export default function AccountCollaborators() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const raw = await res.text();
-      if (DEBUG) console.log("[Collaborators] status:", res.status, "raw:", raw);
       if (!res.ok) throw new Error("Failed to load collaborators");
       let data: any = {};
       try { data = JSON.parse(raw); } catch {}
@@ -92,20 +90,17 @@ export default function AccountCollaborators() {
       const token = await getToken();
       if (!token) throw new Error("No auth");
       const url = `${API_BASE}/account/users/suggest?q=${encodeURIComponent(q)}`;
-      if (DEBUG) console.log("[Suggest] GET", url);
       const resp = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` },
         signal: ctrl.signal,
       });
       const raw = await resp.text();
-      if (DEBUG) console.log("[Suggest] status:", resp.status, "raw:", raw);
       if (!resp.ok) throw new Error("Suggest failed");
       let json: any = {};
       try { json = JSON.parse(raw); } catch {}
       setSuggestions(Array.isArray(json.users) ? json.users : []);
     } catch (e: any) {
       if (e.name !== "AbortError") {
-        if (DEBUG) console.log("[Suggest] error:", e);
         setSuggestions([]);
       }
     } finally {
@@ -140,14 +135,12 @@ export default function AccountCollaborators() {
       const token = await getToken();
       if (!token) throw new Error("Auth missing");
       const url = `${API_BASE}/account/collaborators`;
-      if (DEBUG) console.log("[AddCollaborator] POST", url, email);
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ email }),
       });
       const raw = await res.text();
-      if (DEBUG) console.log("[AddCollaborator] status:", res.status, "raw:", raw);
       if (!res.ok) throw new Error(raw || "Failed to add collaborator");
       setCollabSuccess("Collaborator added.");
       setCollabEmail("");
