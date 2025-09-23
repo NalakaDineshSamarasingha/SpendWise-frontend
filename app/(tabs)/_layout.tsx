@@ -219,7 +219,7 @@ export default function TabLayout() {
                 }} 
               />
               <MenuOption 
-                title="Plan Big Day" 
+                title="Manage Debt" 
                 angle={-Math.PI / 1.2} 
                 onPress={() => {
                   animationValue.value = withTiming(0, {

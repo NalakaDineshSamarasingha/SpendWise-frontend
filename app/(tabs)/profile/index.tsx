@@ -53,7 +53,7 @@ export default function ProfileScreen() {
       title: 'Account',
       icon: 'person.circle',
       backgroundColor: '#E8D5FF',
-      onPress: () => console.log('Account pressed'),
+      onPress: () => router.push('/(tabs)/profile/account'),
     },
     {
       id: 2,
