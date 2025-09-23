@@ -27,6 +27,7 @@ export interface Transaction {
   category: string;
   icon: string;
   color: string;
+  addedByName: string
 }
 
 class UserService {

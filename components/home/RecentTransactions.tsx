@@ -72,6 +72,9 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
             <View style={{ flex: 1 }}>
               <Text style={styles.txType}>{transaction.category}</Text>
               <Text style={styles.txDesc}>{transaction.description}</Text>
+              {transaction.addedByName && (
+                <Text style={styles.txBy}>by {transaction.addedByName}</Text>
+              )}
             </View>
             <View style={{ alignItems: 'flex-end' }}>
               <Text
@@ -149,6 +152,11 @@ const styles = StyleSheet.create({
   txDesc: { 
     color: '#888', 
     fontSize: 12 
+  },
+  txBy: {
+    color: '#555',
+    fontSize: 11,
+    marginTop: 2
   },
   txAmountNeg: { 
     fontWeight: 'bold', 
