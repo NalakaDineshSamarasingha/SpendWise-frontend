@@ -19,7 +19,7 @@ Track your expenses, set budgets, collaborate with a partner, and plan savings o
 | 📝 Add & Track Transactions  | ✅ Working |
 | 📊 Spending Insights         | ✅ Working |
 | 💰 Budget Creation           | ❌ Not yet implemented |
-| 👥 Collaborate with One User (family, partner, friend) | ❌ Not yet implemented |
+| 👥 Collaborate with One User (family, partner, friend) | ✅ Working |
 | 🌍 Trip & Event Planning     | ❌ Not yet implemented|
 | 🎯 Saving Goals              | ❌ Not yet implemented |
 
