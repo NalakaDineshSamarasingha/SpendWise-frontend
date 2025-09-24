@@ -6,8 +6,8 @@ export default function ProfileLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" options={{ title: "Profile" }} />
       <Stack.Screen name="account" options={{ title: "Account" }} />
-      <Stack.Screen name="settings" options={{ title: "Settings" }} />
-      <Stack.Screen name="export" options={{ title: "Export Data" }} />
+      {/* <Stack.Screen name="settings" options={{ title: "Settings" }} />
+      <Stack.Screen name="export" options={{ title: "Export Data" }} /> */}
     </Stack>
   );
 }

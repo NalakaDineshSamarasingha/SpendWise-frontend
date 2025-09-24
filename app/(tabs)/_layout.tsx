@@ -1,4 +1,3 @@
-// app/(tabs)/_layout.tsx
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -20,7 +19,7 @@ export default function TabLayout() {
   const animationValue = useSharedValue(0);
   const [isNavigating, setIsNavigating] = useState(false); // added earlier / keep
 
-  // Toggle radial menu
+
   const toggleMenu = () => {
     if (!isMenuOpen) {
       setIsMenuOpen(true);
@@ -38,15 +37,11 @@ export default function TabLayout() {
     }
   };
 
-  // REPLACED: safer navigation without runOnJS callback inside worklet
   const navigateAfterClose = (path: string) => {
     if (isNavigating) return;
     setIsNavigating(true);
-    // start closing animation immediately
     animationValue.value = withTiming(0, { duration: 140 });
-    // hide menu state so UI unmounts overlay before navigation
     setIsMenuOpen(false);
-    // defer navigation to next frame to avoid concurrent layout during animation
     requestAnimationFrame(() => {
       try {
         router.push(path as any);
@@ -262,10 +257,11 @@ export default function TabLayout() {
                 onPress={() => navigateAfterClose("/save-goal")}
               />
               <MenuOption
-                title="Plan Big Day"
+                title="Manage Debt"
                 angle={-Math.PI / 1.2}
-                onPress={() => navigateAfterClose("/plan-big-day")}
+                onPress={() => navigateAfterClose('/middlebutton/debt')} // now modal
               />
+
             </View>
           </View>
         </>
