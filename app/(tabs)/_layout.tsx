@@ -2,7 +2,7 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
@@ -124,7 +124,7 @@ export default function TabLayout() {
 
         {/* Middle Add button */}
         <Tabs.Screen
-          name="add"
+          name="middlebutton"
           options={{
             tabBarButton: () => (
               <AddButton>
@@ -227,6 +227,7 @@ export default function TabLayout() {
                   }, (finished) => {
                     if (finished) {
                       runOnJS(setIsMenuOpen)(false);
+                      router.navigate('/(tabs)/middlebutton/debt');
                       // Handle Plan Big Day action
                     }
                   });

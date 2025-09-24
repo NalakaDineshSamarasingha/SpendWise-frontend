@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
+import { BarChart, LineChart } from 'react-native-chart-kit';
 import { Transaction } from '../../services/userService';
 
 interface SpendFrequencyProps {
@@ -62,7 +62,7 @@ export default function SpendFrequency({ transactions = [] }: SpendFrequencyProp
 
   return (
     <View style={styles.sectionBox}>
-    <LineChart
+    <BarChart
   data={{
     labels: chartData.labels,
     datasets: [{ data: chartData.data }],
