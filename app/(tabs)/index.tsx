@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { CreateAccountPrompt, HomeDashboard, LoadingScreen } from '../../components/home';
 import { User, UserData, userService } from '../../services/userService';
+import { SafeAreaView } from 'react-native';
 
 interface AppState {
   loading: boolean;
@@ -147,23 +148,16 @@ export default function SpendWiseHomeScreen() {
 
   // User has account, show dashboard
   return (
-    <ScrollView
+    <SafeAreaView
       style={styles.container}
-      contentContainerStyle={styles.scrollContent}
-      refreshControl={
-        <RefreshControl
-          refreshing={state.refreshing}
-          onRefresh={handleRefresh}
-          tintColor="#f59e42"
-          colors={['#f59e42']}
-        />
-      }
+     
     >
       <HomeDashboard 
         user={state.user} 
         userData={state.userData!} 
+        onRefresh={handleRefresh}
       />
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 
