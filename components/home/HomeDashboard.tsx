@@ -5,6 +5,7 @@ import GreetingHeader from './GreetingHeader';
 import AccountBalance from './AccountBalance';
 import SpendFrequency from './SpendFrequency';
 import RecentTransactions from './RecentTransactions';
+import colors from '@/constants/color';
 
 interface HomeDashboardProps {
   user: User;
@@ -63,7 +64,7 @@ export default function HomeDashboard({ user, userData, onRefresh }: HomeDashboa
         {/* Sticky Header: Spend Frequently */}
         <View style={styles.recentHeaderFixed}>
           <Text style={styles.sectionTitle} numberOfLines={1} ellipsizeMode="tail">
-            Spend Frequently
+            Spend Summery
           </Text>
         </View>
 
@@ -87,7 +88,7 @@ export default function HomeDashboard({ user, userData, onRefresh }: HomeDashboa
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.background,
   },
   topContainer: {},
   scrollContainer: {
@@ -102,12 +103,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#121212',
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#222',
+    color: '#888',
   },
   seeAll: {
     color: '#8B5CF6',

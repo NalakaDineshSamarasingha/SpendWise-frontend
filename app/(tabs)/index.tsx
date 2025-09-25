@@ -3,6 +3,7 @@ import { Alert, RefreshControl, ScrollView, StyleSheet, View } from 'react-nativ
 import { CreateAccountPrompt, HomeDashboard, LoadingScreen } from '../../components/home';
 import { User, UserData, userService } from '../../services/userService';
 import { SafeAreaView } from 'react-native';
+import colors from "../../constants/color";
 
 interface AppState {
   loading: boolean;
@@ -164,7 +165,7 @@ export default function SpendWiseHomeScreen() {
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: '#f8fafc' 
+    backgroundColor: colors.background 
   },
   scrollContent: {
     flexGrow: 1,

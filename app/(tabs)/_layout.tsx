@@ -1,4 +1,5 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import colors from "@/constants/color";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { Tabs, router } from "expo-router";
@@ -14,7 +15,7 @@ import Animated, {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const activeColor = "#8B5CF6";
+  const activeColor = colors.accentGreen;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const animationValue = useSharedValue(0);
   const [isNavigating, setIsNavigating] = useState(false); // added earlier / keep
@@ -112,6 +113,7 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
+
           tabBarActiveTintColor: activeColor,
           tabBarInactiveTintColor:
             Colors[colorScheme ?? "light"].tabIconDefault,
@@ -122,7 +124,7 @@ export default function TabLayout() {
           tabBarIconStyle: styles.tabIcon,
           tabBarAllowFontScaling: false,
           tabBarHideOnKeyboard: true,
-          tabBarStyle: [styles.tabBar, { backgroundColor: "#FFFFFF" }],
+          tabBarStyle: [styles.tabBar, { backgroundColor: "#1E1E1E" }],
         }}
       >
         <Tabs.Screen
@@ -276,7 +278,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingTop: 10,
     borderTopWidth: 0,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.backgroundSecondary,
     elevation: 4,
   },
   tabLabel: {
@@ -340,7 +342,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   menuOptionButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: colors.accentBlue,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,

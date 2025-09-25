@@ -1,133 +1,139 @@
-import React, { useState, useMemo } from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BarChart, LineChart } from 'react-native-chart-kit';
+import React, { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
+import SpendCard from './SpendCard';
 import { Transaction } from '../../services/userService';
 
 interface SpendFrequencyProps {
   transactions?: Transaction[];
+  currency?: string;
 }
 
-export default function SpendFrequency({ transactions = [] }: SpendFrequencyProps) {
-  const [activeTab, setActiveTab] = useState('Overall');
-  const tabs = ['Overall', 'Week', 'Month', 'Year'];
-
-  const chartData = useMemo(() => {
-    const now = new Date();
-    let filteredTx: Transaction[] = [];
-
-    if (activeTab === 'Week') {
-      const startOfWeek = new Date(now);
-      startOfWeek.setDate(now.getDate() - 6);
-      filteredTx = transactions.filter(
-        tx => tx.type === 'expense' && new Date(tx.date) >= startOfWeek
-      );
-    } else if (activeTab === 'Month') {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      filteredTx = transactions.filter(
-        tx => tx.type === 'expense' && new Date(tx.date) >= startOfMonth
-      );
-    } else if (activeTab === 'Year') {
-      const startOfYear = new Date(now.getFullYear(), 0, 1);
-      filteredTx = transactions.filter(
-        tx => tx.type === 'expense' && new Date(tx.date) >= startOfYear
-      );
-    } else {
-      filteredTx = transactions.filter(tx => tx.type === 'expense');
+function startOfDay(d: Date) {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x;
+}
+function endOfDay(d: Date) {
+  const x = new Date(d);
+  x.setHours(23, 59, 59, 999);
+  return x;
+}
+function addDays(d: Date, n: number) {
+  const x = new Date(d);
+  x.setDate(x.getDate() + n);
+  return x;
+}
+function firstDayOfMonth(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth(), 1);
+}
+function lastDayOfMonth(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
+}
+function sumInRange(txs: Transaction[], from: Date, to: Date) {
+  let amount = 0;
+  let count = 0;
+  for (const tx of txs) {
+    if (tx.type !== 'expense') continue;
+    const dt = new Date(tx.date);
+    if (dt >= from && dt <= to) {
+      amount += Number(tx.amount) || 0;
+      count += 1;
     }
+  }
+  return { amount, count };
+}
+function pctChange(current: number, previous: number) {
+  if (previous <= 0) return current > 0 ? 100 : 0;
+  return ((current - previous) / previous) * 100;
+}
+function formatGrowth(p: number, suffix: string) {
+  const sign = p > 0 ? '+' : p < 0 ? '' : '';
+  return `${sign}${p.toFixed(0)}% ${suffix}`;
+}
 
-    const labels: string[] = [];
-    const data: number[] = [];
+export default function SpendFrequency({ transactions = [], currency = 'LKR' }: SpendFrequencyProps) {
+  const { today, week, month } = useMemo(() => {
+    const now = new Date();
 
-    filteredTx.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const todayRange = { from: startOfDay(now), to: endOfDay(now) };
+    const yesterdayRange = {
+      from: startOfDay(addDays(now, -1)),
+      to: endOfDay(addDays(now, -1)),
+    };
+    const todaySum = sumInRange(transactions, todayRange.from, todayRange.to);
+    const yesterdaySum = sumInRange(transactions, yesterdayRange.from, yesterdayRange.to);
+    const todayGrowth = pctChange(todaySum.amount, yesterdaySum.amount);
 
-    filteredTx.forEach(tx => {
-      const date = new Date(tx.date);
-      let label = '';
-      if (activeTab === 'Year' || activeTab === 'Overall') {
-        label = `${date.getMonth() + 1}-${date.getFullYear()}`;
-      } else {
-        label = date.toISOString().slice(5, 10);
-      }
-      const idx = labels.indexOf(label);
-      if (idx >= 0) {
-        data[idx] += tx.amount;
-      } else {
-        labels.push(label);
-        data.push(tx.amount);
-      }
-    });
+    // This week (last 7 days including today) vs previous 7 days
+    const thisWeekFrom = startOfDay(addDays(now, -6));
+    const thisWeekTo = endOfDay(now);
+    const prevWeekFrom = startOfDay(addDays(now, -13));
+    const prevWeekTo = endOfDay(addDays(now, -7));
+    const weekSum = sumInRange(transactions, thisWeekFrom, thisWeekTo);
+    const prevWeekSum = sumInRange(transactions, prevWeekFrom, prevWeekTo);
+    const weekGrowth = pctChange(weekSum.amount, prevWeekSum.amount);
 
-    return { labels, data };
-  }, [transactions, activeTab]);
+    // This month vs previous month
+    const thisMonthFrom = firstDayOfMonth(now);
+    const thisMonthTo = endOfDay(now);
+    const prevMonthLastDay = new Date(thisMonthFrom.getFullYear(), thisMonthFrom.getMonth(), 0);
+    const prevMonthFrom = firstDayOfMonth(prevMonthLastDay);
+    const prevMonthTo = lastDayOfMonth(prevMonthLastDay);
+    const monthSum = sumInRange(transactions, thisMonthFrom, thisMonthTo);
+    const prevMonthSum = sumInRange(transactions, prevMonthFrom, prevMonthTo);
+    const monthGrowth = pctChange(monthSum.amount, prevMonthSum.amount);
+
+    return {
+      today: {
+        amount: todaySum.amount,
+        count: todaySum.count,
+        growthText: formatGrowth(todayGrowth, 'from yesterday'),
+      },
+      week: {
+        amount: weekSum.amount,
+        count: weekSum.count,
+        growthText: formatGrowth(weekGrowth, 'vs last 7 days'),
+      },
+      month: {
+        amount: monthSum.amount,
+        count: monthSum.count,
+        growthText: formatGrowth(monthGrowth, 'vs last month'),
+      },
+    };
+  }, [transactions]);
 
   return (
-    <View style={styles.sectionBox}>
-    <BarChart
-  data={{
-    labels: chartData.labels,
-    datasets: [{ data: chartData.data }],
-  }}
-  width={Dimensions.get('window').width - 40} // or container width
-  height={200}
-  yAxisLabel=""
-  yAxisSuffix="LKR"
-  chartConfig={{
-    backgroundGradientFrom: '#fff',
-    backgroundGradientTo: '#fff',
-    decimalPlaces: 0,
-    color: (opacity = 1) => `rgba(245,158,66, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(0,0,0, ${opacity})`,
-    style: { borderRadius: 16 },
-    propsForDots: { r: '4', strokeWidth: '2', stroke: '#f59e42' },
-  }}
-  fromZero
-  withHorizontalLabels={false} // hide x-axis labels
-  xLabelsOffset={0} // remove left offset
-  style={{ borderRadius: 16, paddingLeft: 0 }} // remove left padding
-/>
-
-      <View style={styles.tabsRow}>
-        {tabs.map(tab => (
-          <TouchableOpacity
-            key={tab}
-            onPress={() => setActiveTab(tab)}
-            style={[styles.tab, activeTab === tab && styles.tabActive]}
-          >
-            <Text style={[styles.tabText, activeTab === tab && styles.tabActiveText]}>
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+    <View style={styles.container}>
+      <SpendCard
+        headline="Today"
+        label="Expenses"
+        amount={today.amount}
+        currency={currency}
+        transactions={today.count}
+        growthText={today.growthText}
+      />
+      <SpendCard
+        headline="This Week"
+        label="Expenses"
+        amount={week.amount}
+        currency={currency}
+        transactions={week.count}
+        growthText={week.growthText}
+      />
+      <SpendCard
+        headline="This Month"
+        label="Expenses"
+        amount={month.amount}
+        currency={currency}
+        transactions={month.count}
+        growthText={month.growthText}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionBox: {
-    marginHorizontal: 20,
+  container: {
     marginBottom: 24,
-  },
-  tabsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 12,
-  },
-  tab: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    backgroundColor: '#f3f4f6',
-  },
-  tabActive: {
-    backgroundColor: '#fef3c7',
-  },
-  tabText: {
-    color: '#888',
-    fontWeight: '500',
-  },
-  tabActiveText: {
-    color: '#f59e42',
-    fontWeight: 'bold',
   },
 });

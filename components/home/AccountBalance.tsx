@@ -1,4 +1,5 @@
 // components/home/AccountBalance.tsx
+import colors from '@/constants/color';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
@@ -20,28 +21,27 @@ export default function AccountBalance({ balance, income, expenses }: AccountBal
       {/* Account Balance */}
       <View style={styles.balanceBox}>
         <Text style={styles.balanceLabel}>Account Balance</Text>
-        <Text style={styles.balance}>{safeBalance.toLocaleString()}<Text style={{fontSize: 18, color: '#888'}}>LKR</Text></Text>
+        <Text style={styles.balance}>{safeBalance.toLocaleString()}<Text style={{fontSize: 18, color: colors.textSecondary}}>LKR</Text></Text>
       </View>
       
       {/* Income/Expenses Cards */}
       <View style={styles.cardsRow}>
-        <View style={[styles.card, { backgroundColor: '#22c55e' }]}> 
+        <View style={[styles.card, { backgroundColor: '#1E1E1E' }]}> 
           <View style={styles.cardIcon}>
-            <Icon name="arrow-down-left" size={20} color="#fff" />
+            <Icon name="arrow-down-left" size={20} color={colors.accentGreen} />
           </View>
           <View>
             <Text style={styles.cardLabel}>Income</Text>
-            <Text style={styles.cardAmount}>{safeIncome.toLocaleString()}<Text style={{fontSize: 8, color: '#fff'}}>LKR</Text></Text>
+            <Text style={styles.cardAmount}>{safeIncome.toLocaleString()}<Text style={{fontSize: 8, color: colors.textSecondary}}>LKR</Text></Text>
           </View>
         </View>
-        <View style={[styles.card, {borderWidth:2, borderColor: '#ef4444' ,borderRadius:10,backgroundColor: '#fff'}]}> 
-          <View style={styles.cardIcon2}>
-            <Icon name="arrow-up-right" size={20} color="#fff" />
+        <View style={[styles.card, {borderRadius:10,backgroundColor: '#1E1E1E'}]}> 
+          <View style={styles.cardIcon}>
+            <Icon name="arrow-up-right" size={20} color="#ef4444" />
           </View>
           <View>
-            <Text style={[{color:"000", fontSize: 14 }]}>Expenses</Text>
-            <Text style={[{color:"000",   fontSize: 20, 
-    fontWeight: 'bold' }]}>{safeExpenses.toLocaleString()}<Text style={{fontSize: 8, color: '#000'}}>LKR</Text></Text>
+            <Text style={styles.cardLabel}>Expenses</Text>
+            <Text style={styles.cardAmount}>{safeExpenses.toLocaleString()}<Text style={{fontSize: 8, color: '#888'}}>LKR</Text></Text>
           </View>
         </View>
       </View>
@@ -62,13 +62,13 @@ const styles = StyleSheet.create({
   balance: { 
     fontSize: 40, 
     fontWeight: 'bold', 
-    color: '#222' 
+    color: '#fff' 
   },
   cardsRow: { 
     flexDirection: 'row', 
     justifyContent: 'space-between', 
     marginHorizontal: 20, 
-    marginBottom: 24 
+    marginBottom: 10 
   },
   card: { 
     flex: 1, 
