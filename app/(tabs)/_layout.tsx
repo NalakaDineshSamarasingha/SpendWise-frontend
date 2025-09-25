@@ -124,7 +124,7 @@ export default function TabLayout() {
           tabBarIconStyle: styles.tabIcon,
           tabBarAllowFontScaling: false,
           tabBarHideOnKeyboard: true,
-          tabBarStyle: [styles.tabBar, { backgroundColor: "#1E1E1E" }],
+          tabBarStyle: [styles.tabBar, { backgroundColor: colors.backgroundSecondary }],
         }}
       >
         <Tabs.Screen

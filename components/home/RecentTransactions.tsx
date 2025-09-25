@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { Transaction } from '../../services/userService';
 import { getIconColorForCategory } from '../../utils/categoryMap';
+import colors from '@/constants/color';
 
 interface RecentTransactionsProps {
   transactions: Transaction[];
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
   txRow: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    backgroundColor: '#fff', 
+    backgroundColor: colors.backgroundSecondary, 
     borderRadius: 16, 
     padding: 12, 
     marginBottom: 8, 
@@ -122,14 +123,14 @@ const styles = StyleSheet.create({
   },
   txType: { 
     fontWeight: 'bold', 
-    color: '#333' 
+    color: colors.textSecondary 
   },
   txDesc: { 
     color: '#888', 
     fontSize: 12 
   },
   txBy: {
-    color: '#555',
+    color: colors.textDisabled,
     fontSize: 11,
     marginTop: 2
   },
