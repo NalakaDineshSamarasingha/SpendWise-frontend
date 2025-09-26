@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   interpolate,
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -18,21 +19,19 @@ export default function TabLayout() {
   const activeColor = colors.accentGreen;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const animationValue = useSharedValue(0);
-  const [isNavigating, setIsNavigating] = useState(false); // added earlier / keep
-
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const toggleMenu = () => {
     if (!isMenuOpen) {
       setIsMenuOpen(true);
       animationValue.value = withSpring(1, {
-        damping: 15,
-        stiffness: 150,
-        mass: 1,
+        damping: 18,
+        stiffness: 180,
       });
     } else {
-      animationValue.value = withTiming(0, { duration: 200 }, (finished) => {
+      animationValue.value = withTiming(0, { duration: 220 }, (finished) => {
         if (finished) {
-          setIsMenuOpen(false);
+          runOnJS(setIsMenuOpen)(false);
         }
       });
     }
@@ -41,7 +40,7 @@ export default function TabLayout() {
   const navigateAfterClose = (path: string) => {
     if (isNavigating) return;
     setIsNavigating(true);
-    animationValue.value = withTiming(0, { duration: 140 });
+    animationValue.value = withTiming(0, { duration: 180 });
     setIsMenuOpen(false);
     requestAnimationFrame(() => {
       try {
@@ -54,16 +53,32 @@ export default function TabLayout() {
     });
   };
 
-  // Central "+" button
-  const AddButton = ({ children }: { children: React.ReactNode }) => (
-    <TouchableOpacity
-      style={styles.addButtonContainer}
-      activeOpacity={0.7}
-      onPress={toggleMenu}
-    >
-      <View style={styles.addButton}>{children}</View>
-    </TouchableOpacity>
-  );
+  // Central "+" button with rotation
+  const AddButton = () => {
+    const animatedStyle = useAnimatedStyle(() => {
+      return {
+        transform: [
+          {
+            rotate: `${interpolate(animationValue.value, [0, 1], [0, 45])}deg`,
+          },
+        ],
+      };
+    });
+
+    return (
+      <TouchableOpacity
+        style={styles.addButtonContainer}
+        activeOpacity={0.7}
+        onPress={toggleMenu}
+      >
+        <View style={styles.addButton}>
+          <Animated.View style={animatedStyle}>
+            <IconSymbol size={32} name="plus" color="white" />
+          </Animated.View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   // Animated menu option
   const MenuOption = ({
@@ -107,13 +122,11 @@ export default function TabLayout() {
       </Animated.View>
     );
   };
-
   return (
     <>
       <Tabs
         screenOptions={{
           headerShown: false,
-
           tabBarActiveTintColor: activeColor,
           tabBarInactiveTintColor:
             Colors[colorScheme ?? "light"].tabIconDefault,
@@ -124,7 +137,10 @@ export default function TabLayout() {
           tabBarIconStyle: styles.tabIcon,
           tabBarAllowFontScaling: false,
           tabBarHideOnKeyboard: true,
-          tabBarStyle: [styles.tabBar, { backgroundColor: colors.backgroundSecondary }],
+          tabBarStyle: [
+            styles.tabBar,
+            { backgroundColor: colors.backgroundSecondary },
+          ],
         }}
       >
         <Tabs.Screen
@@ -178,11 +194,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="middlebutton"
           options={{
-            tabBarButton: () => (
-              <AddButton>
-                <IconSymbol size={32} name="plus" color="white" />
-              </AddButton>
-            ),
+            tabBarButton: () => <AddButton />,
           }}
         />
         <Tabs.Screen
@@ -261,9 +273,8 @@ export default function TabLayout() {
               <MenuOption
                 title="Manage Debt"
                 angle={-Math.PI / 1.2}
-                onPress={() => navigateAfterClose('/middlebutton/debt')} // now modal
+                onPress={() => navigateAfterClose("/middlebutton/debt")}
               />
-
             </View>
           </View>
         </>
@@ -279,7 +290,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     borderTopWidth: 0,
     backgroundColor: colors.backgroundSecondary,
-    elevation: 4,
+    elevation: 8,
   },
   tabLabel: {
     fontSize: 11,
@@ -289,38 +300,40 @@ const styles = StyleSheet.create({
   },
   tabItem: { paddingVertical: 6 },
   tabIcon: { paddingBottom: 0 },
+
+  // Floating "+" button
   addButtonContainer: {
-    top: -25,
+    top: -30,
     justifyContent: "center",
     alignItems: "center",
     flex: 1,
   },
   addButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "green",
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: colors.accentGreen,
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 8,
   },
-  iconWrap: { alignItems: "center", justifyContent: "center", marginBottom: 0 },
-  iconBg: { padding: 0, borderRadius: 20 },
+
+  // Menu overlay area
   backdrop: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: "rgba(0,0,0,0.35)",
   },
   menuOverlay: {
     position: "absolute",
-    bottom: 35,
+    bottom: 95, // higher than tab bar
     left: 0,
     right: 0,
     height: 250,
@@ -330,12 +343,14 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     position: "relative",
-    width: 300,
-    height: 250,
+    width: 280,
+    height: 230,
     justifyContent: "flex-end",
     alignItems: "center",
-    paddingBottom: 50,
+    paddingBottom: 20,
   },
+
+  // Radial buttons
   menuOption: {
     position: "absolute",
     alignItems: "center",
@@ -343,16 +358,23 @@ const styles = StyleSheet.create({
   },
   menuOptionButton: {
     backgroundColor: colors.accentBlue,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 24,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowRadius: 4,
+    elevation: 6,
   },
-  menuOptionText: { color: "white", fontSize: 12, fontWeight: "bold" },
+  menuOptionText: {
+    color: "white",
+    fontSize: 13,
+    fontWeight: "600",
+  },
+
+  iconWrap: { alignItems: "center", justifyContent: "center" },
+  iconBg: { padding: 0, borderRadius: 20 },
 });
 
 function withOpacity(hex: string, opacity: number) {
@@ -366,4 +388,3 @@ function withOpacity(hex: string, opacity: number) {
   const b = parseInt(m[3], 16);
   return `rgba(${r},${g},${b},${opacity})`;
 }
-

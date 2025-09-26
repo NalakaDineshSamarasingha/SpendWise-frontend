@@ -1,3 +1,4 @@
+import colors from '@/constants/color';
 import { StyleSheet } from 'react-native';
 
 
@@ -5,7 +6,7 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -20,7 +21,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   filterButton: {
-    marginRight: 16,
+    marginRight: 10,
   },
   monthSelector: {
     flexDirection: 'row',
@@ -29,7 +30,7 @@ export const styles = StyleSheet.create({
   monthText: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#111827',
+    color: colors.textPrimary,
     marginRight: 8,
   },
   addButtonContainer: {
@@ -37,7 +38,7 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
   },
   addButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: colors.accentBlue,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -55,7 +56,7 @@ export const styles = StyleSheet.create({
     marginBottom: 24,
   },
   reportCard: {
-    backgroundColor: '#E9D5FF',
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 16,
     padding: 16,
     flexDirection: 'row',
@@ -63,7 +64,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   reportText: {
-    color: '#7C3AED',
+    color: colors.textSecondary,
     fontSize: 16,
     fontWeight: '500',
   },
@@ -77,7 +78,7 @@ export const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.textSecondary,
     marginBottom: 16,
   },
   transactionItem: {
@@ -105,12 +106,12 @@ export const styles = StyleSheet.create({
   transactionCategory: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   transactionDescription: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   transactionRight: {
     alignItems: 'flex-end',
@@ -122,7 +123,7 @@ export const styles = StyleSheet.create({
   },
   transactionTime: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   modalOverlay: {
     flex: 1,
@@ -132,7 +133,7 @@ export const styles = StyleSheet.create({
     padding: 16,
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
     borderRadius: 24,
     padding: 24,
     width: '100%',

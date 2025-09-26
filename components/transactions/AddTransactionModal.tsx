@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Category, CategorySelector } from './CategorySelector';
+import colors from '@/constants/color';
 
 export type NewTransaction = {
   type: 'expense' | 'income';
@@ -86,7 +87,7 @@ export function AddTransactionModal({
 
 const styles = StyleSheet.create({
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 16 },
-  modalContent: { backgroundColor: '#FFFFFF', borderRadius: 24, padding: 24, width: '100%', maxWidth: 400 },
+  modalContent: { backgroundColor: colors.background, borderRadius: 24, padding: 24, width: '100%', maxWidth: 400 },
   modalTitle: { fontSize: 20, fontWeight: '700', textAlign: 'center', marginBottom: 24, color: '#111827' },
   typeSelector: { flexDirection: 'row', backgroundColor: '#F3F4F6', borderRadius: 16, padding: 4, marginBottom: 20 },
   typeButton: { flex: 1, paddingVertical: 12, borderRadius: 12, alignItems: 'center' },
