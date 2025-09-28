@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Platform } from "react-native";
 import {
@@ -12,8 +12,8 @@ import {
 
 export type NewDestination = {
   location: string;
-  date: Date; // changed to Date type
-  totalBudget: string;
+  date: Date;
+  totalBudget: string; // we keep as string for display
   transport: string;
   stay: string;
   food: string;
@@ -34,6 +34,22 @@ export function AddDestinationModal({
   onAdd: () => void;
 }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  // Update total budget whenever any category changes
+  useEffect(() => {
+    const transport = parseFloat(newDestination.transport) || 0;
+    const stay = parseFloat(newDestination.stay) || 0;
+    const food = parseFloat(newDestination.food) || 0;
+    const other = parseFloat(newDestination.other) || 0;
+
+    const total = transport + stay + food + other;
+    setNewDestination({ ...newDestination, totalBudget: total.toString() });
+  }, [
+    newDestination.transport,
+    newDestination.stay,
+    newDestination.food,
+    newDestination.other,
+  ]);
 
   return (
     <Modal
@@ -85,12 +101,9 @@ export function AddDestinationModal({
           <Text style={styles.inputLabel}>Planned Budget (Total)</Text>
           <TextInput
             style={styles.textInput}
-            placeholder="Enter total budget"
+            placeholder="Total budget"
             value={newDestination.totalBudget}
-            onChangeText={(text) =>
-              setNewDestination({ ...newDestination, totalBudget: text })
-            }
-            keyboardType="numeric"
+            editable={false} // make it read-only
           />
 
           <Text style={styles.inputLabel}>Budget Categories</Text>
@@ -204,3 +217,4 @@ const styles = StyleSheet.create({
   },
   addButtonText: { fontSize: 16, fontWeight: "600", color: "#FFFFFF" },
 });
+
