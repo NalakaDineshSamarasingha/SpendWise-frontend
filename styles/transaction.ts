@@ -11,8 +11,9 @@ export const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
+    alignItems: 'center', 
+    width: '92%',
+    alignSelf: 'center',
     paddingVertical: 16,
     paddingTop:50
   },
@@ -34,7 +35,8 @@ export const styles = StyleSheet.create({
     marginRight: 8,
   },
   addButtonContainer: {
-    paddingHorizontal: 24,
+  width: '92%',
+    alignSelf: 'center',
     marginBottom: 16,
   },
   addButton: {
@@ -43,7 +45,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
-    borderRadius: 16,
+    borderRadius: 10,
   },
   addButtonText: {
     color: '#FFFFFF',
@@ -52,12 +54,13 @@ export const styles = StyleSheet.create({
     marginLeft: 8,
   },
   reportContainer: {
-    paddingHorizontal: 24,
+      width: '92%',
+    alignSelf: 'center',
     marginBottom: 24,
   },
   reportCard: {
     backgroundColor: colors.backgroundSecondary,
-    borderRadius: 16,
+    borderRadius: 10,
     padding: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -71,21 +74,27 @@ export const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  section: {
-    paddingHorizontal: 24,
-    marginBottom: 32,
+  section: {  
+    width: '92%',
+    alignSelf: 'center',
+    marginBottom: 3,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
     color: colors.textSecondary,
-    marginBottom: 16,
+    marginBottom: 6,
+    marginTop:6
   },
   transactionItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 16,
+  },
+  txItemWrapper:{
+    width: '92%',
+    alignSelf: 'center',
   },
   transactionLeft: {
     flexDirection: 'row',

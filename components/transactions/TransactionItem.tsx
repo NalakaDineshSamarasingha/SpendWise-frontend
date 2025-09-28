@@ -1,3 +1,4 @@
+import colors from '@/constants/color';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -19,8 +20,8 @@ export function TransactionItem({ transaction }: { transaction: UITransaction })
   return (
     <View style={styles.transactionItem}>
       <View style={styles.transactionLeft}>
-        <View style={[styles.iconContainer, { backgroundColor: transaction.color }]}>
-          <Ionicons name={(transaction.icon as any) || 'cash-outline'} size={24} color="#374151" />
+        <View style={[styles.iconContainer, { backgroundColor: colors.border }]}>
+          <Ionicons name={(transaction.icon as any) || 'cash-outline'} size={24} color={colors.textSecondary} />
         </View>
         <View style={styles.transactionInfo}>
           <Text style={styles.transactionCategory}>{transaction.category}</Text>
@@ -47,7 +48,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius:10,
+    backgroundColor: colors.backgroundSecondary,
+    marginBottom:4
   },
   transactionLeft: {
     flexDirection: 'row',
@@ -63,7 +68,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   transactionInfo: { flex: 1 },
-  transactionCategory: { fontSize: 16, fontWeight: '600', color: '#111827', marginBottom: 4 },
+  transactionCategory: { fontSize: 16, fontWeight: '600', color: colors.textPrimary, marginBottom: 4 },
   transactionDescription: { fontSize: 14, color: '#6B7280' },
   transactionRight: { alignItems: 'flex-end' },
   transactionAmount: { fontSize: 16, fontWeight: '600', marginBottom: 4 },
