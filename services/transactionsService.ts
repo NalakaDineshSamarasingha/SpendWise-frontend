@@ -10,6 +10,7 @@ export interface TransactionDTO {
   date: string; // ISO from backend
   addedBy: string;
   category?: string;
+  addedByName: string;
 }
 
 export interface CreateTransactionInput {

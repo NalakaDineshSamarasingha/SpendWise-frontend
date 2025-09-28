@@ -17,6 +17,7 @@ export default function GoogleLoginButton({ onLogin }: { onLogin: (token: string
     if (result.type === "success" && result.url) {
       const url = new URL(result.url);
       const token = url.searchParams.get("token");
+      console.log(token);
       if (token) {
         onLogin(token);
       }

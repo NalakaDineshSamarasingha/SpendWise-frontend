@@ -179,7 +179,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="add"
+          name="middlebutton"
           options={{
             tabBarButton: () => (
               <AddButton>

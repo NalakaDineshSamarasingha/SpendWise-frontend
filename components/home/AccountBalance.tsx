@@ -34,13 +34,14 @@ export default function AccountBalance({ balance, income, expenses }: AccountBal
             <Text style={styles.cardAmount}>{safeIncome.toLocaleString()}<Text style={{fontSize: 8, color: '#fff'}}>LKR</Text></Text>
           </View>
         </View>
-        <View style={[styles.card, { backgroundColor: '#ef4444' }]}> 
-          <View style={styles.cardIcon}>
+        <View style={[styles.card, {borderWidth:2, borderColor: '#ef4444' ,borderRadius:10,backgroundColor: '#fff'}]}> 
+          <View style={styles.cardIcon2}>
             <Icon name="arrow-up-right" size={20} color="#fff" />
           </View>
           <View>
-            <Text style={styles.cardLabel}>Expenses</Text>
-            <Text style={styles.cardAmount}>{safeExpenses.toLocaleString()}<Text style={{fontSize: 8, color: '#fff'}}>LKR</Text></Text>
+            <Text style={[{color:"000", fontSize: 14 }]}>Expenses</Text>
+            <Text style={[{color:"000",   fontSize: 20, 
+    fontWeight: 'bold' }]}>{safeExpenses.toLocaleString()}<Text style={{fontSize: 8, color: '#000'}}>LKR</Text></Text>
           </View>
         </View>
       </View>
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
     flex: 1, 
     flexDirection: 'row', 
     alignItems: 'center', 
-    borderRadius: 20, 
+    borderRadius: 10, 
     padding: 16, 
     marginHorizontal: 4 
   },
@@ -82,6 +83,15 @@ const styles = StyleSheet.create({
     height: 40, 
     borderRadius: 20, 
     backgroundColor: 'rgba(255,255,255,0.2)', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    marginRight: 12 
+  },
+    cardIcon2: { 
+    width: 40, 
+    height: 40, 
+    borderRadius: 20, 
+    backgroundColor: '#ef4444', 
     alignItems: 'center', 
     justifyContent: 'center', 
     marginRight: 12 

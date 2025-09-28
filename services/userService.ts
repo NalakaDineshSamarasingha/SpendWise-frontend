@@ -27,6 +27,7 @@ export interface Transaction {
   category: string;
   icon: string;
   color: string;
+  addedByName: string
 }
 
 class UserService {
@@ -111,10 +112,7 @@ class UserService {
             transformedData.expenses === 0 &&
             (!transformedData.transactions || transformedData.transactions.length === 0)
           ) {
-            const mockData = this.getMockUserData();
-            transformedData.income = mockData.data.income;
-            transformedData.expenses = mockData.data.expenses;
-            transformedData.transactions = mockData.data.transactions;
+           
           }
         }
         
@@ -128,8 +126,6 @@ class UserService {
     } catch (error) {
       console.error('Error checking user account:', error);
       // For development purposes, return mock data
-      console.log('Using mock data for development');
-      return this.getMockUserData();
     }
   }
 
@@ -207,48 +203,6 @@ class UserService {
       console.error('Error creating user account:', error);
       return false;
     }
-  }
-  private getMockUserData(): { hasAccount: boolean; data: UserData } {
-    return {
-      hasAccount: true,
-      data: {
-        accountBalance: 9400,
-        income: 5000,
-        expenses: 1200,
-        transactions: [
-          {
-            id: '1',
-            type: 'Shopping',
-            description: 'Buy some grocery',
-            amount: -120,
-            time: '10:00 AM',
-            category: 'shopping',
-            icon: 'shopping-bag',
-            color: '#fb923c',
-          },
-          {
-            id: '2',
-            type: 'Subscription',
-            description: 'Disney+ Annual..',
-            amount: -80,
-            time: '03:30 PM',
-            category: 'entertainment',
-            icon: 'tv',
-            color: '#8B5CF6',
-          },
-          {
-            id: '3',
-            type: 'Food',
-            description: 'Buy a ramen',
-            amount: -32,
-            time: '07:30 PM',
-            category: 'food',
-            icon: 'coffee',
-            color: '#ef4444',
-          },
-        ],
-      },
-    };
   }
 }
 
