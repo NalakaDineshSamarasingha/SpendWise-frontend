@@ -84,7 +84,6 @@ const ExpenseTrackerApp = () => {
         setTransactions(data.map(toUITransaction));
       } catch (e) {
         console.warn('Failed to load transactions, using local sample:', e);
-        // Optional: keep empty or set a small sample
       }
     })();
   }, [toUITransaction]);
