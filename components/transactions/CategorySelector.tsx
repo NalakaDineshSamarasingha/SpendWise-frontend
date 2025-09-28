@@ -1,3 +1,4 @@
+import colors from '@/constants/color';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
@@ -18,10 +19,10 @@ export function CategorySelector({
       {categories.map((category) => (
         <TouchableOpacity
           key={category.name}
-          style={[styles.categoryItem, { backgroundColor: category.color }, selected === category.name && styles.selectedCategory]}
+          style={[styles.categoryItem, { backgroundColor: colors.border }, selected === category.name && styles.selectedCategory]}
           onPress={() => onSelect(category.name)}
         >
-          <Ionicons name={category.icon as any} size={20} color="#374151" />
+          <Ionicons name={category.icon as any} size={20} color={colors.textSecondary} />
           <Text style={styles.categoryText}>{category.name}</Text>
         </TouchableOpacity>
       ))}
@@ -36,10 +37,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 16,
+    borderRadius: 10,
     marginRight: 12,
     minWidth: 100,
   },
   selectedCategory: { borderWidth: 2, borderColor: '#3B82F6' },
-  categoryText: { fontSize: 14, fontWeight: '500', color: '#374151', marginLeft: 8 },
+  categoryText: { fontSize: 14, fontWeight: '500', color: colors.textPrimary, marginLeft: 8 },
 });

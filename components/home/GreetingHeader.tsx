@@ -2,6 +2,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import colors from "../../constants/color";
 
 interface GreetingHeaderProps {
   name: string;
@@ -37,7 +38,7 @@ export default function GreetingHeader({ name, profileImage }: GreetingHeaderPro
           )}
         </View>
        
-        <Icon name="bell" size={24} color="#8B5CF6" />
+        <Icon name="bell" size={24} color= {colors.accentBlue}/>
       </View>
     </>
   );
@@ -48,13 +49,13 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 20,
     paddingTop: 54,
-    backgroundColor: '#eef0f1ff',
+    backgroundColor: colors.backgroundSecondary,
     zIndex: 2,
   },
   greetingText: { 
     fontSize: 16, 
     fontWeight: 'bold', 
-    color: '#222' 
+    color: colors.textPrimary 
   },
   header: { 
     flexDirection: 'row', 
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
     width: 40, 
     height: 40, 
     borderRadius: 20, 
-    backgroundColor: '#8B5CF6', 
+    backgroundColor: colors.accentBlue, 
     alignItems: 'center', 
     justifyContent: 'center', 
     overflow: 'hidden' 
@@ -77,21 +78,8 @@ const styles = StyleSheet.create({
     borderRadius: 20 
   },
   avatarText: { 
-    color: '#fff', 
+    color: colors.textSecondary, 
     fontWeight: 'bold', 
     fontSize: 16 
-  },
-  monthBox: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    backgroundColor: '#fff', 
-    paddingHorizontal: 16, 
-    paddingVertical: 8, 
-    borderRadius: 20 
-  },
-  monthText: { 
-    color: '#8B5CF6', 
-    fontWeight: 'bold', 
-    marginRight: 6 
-  },
+  }
 });

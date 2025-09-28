@@ -1,3 +1,4 @@
+import colors from '@/constants/color';
 import { StyleSheet } from 'react-native';
 
 
@@ -5,13 +6,14 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
+    alignItems: 'center', 
+    width: '92%',
+    alignSelf: 'center',
     paddingVertical: 16,
     paddingTop:50
   },
@@ -20,7 +22,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   filterButton: {
-    marginRight: 16,
+    marginRight: 10,
   },
   monthSelector: {
     flexDirection: 'row',
@@ -29,20 +31,21 @@ export const styles = StyleSheet.create({
   monthText: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#111827',
+    color: colors.textPrimary,
     marginRight: 8,
   },
   addButtonContainer: {
-    paddingHorizontal: 24,
+  width: '92%',
+    alignSelf: 'center',
     marginBottom: 16,
   },
   addButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: colors.accentBlue,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
-    borderRadius: 16,
+    borderRadius: 10,
   },
   addButtonText: {
     color: '#FFFFFF',
@@ -51,40 +54,47 @@ export const styles = StyleSheet.create({
     marginLeft: 8,
   },
   reportContainer: {
-    paddingHorizontal: 24,
+      width: '92%',
+    alignSelf: 'center',
     marginBottom: 24,
   },
   reportCard: {
-    backgroundColor: '#E9D5FF',
-    borderRadius: 16,
+    backgroundColor: colors.backgroundSecondary,
+    borderRadius: 10,
     padding: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   reportText: {
-    color: '#7C3AED',
+    color: colors.textSecondary,
     fontSize: 16,
     fontWeight: '500',
   },
   scrollView: {
     flex: 1,
   },
-  section: {
-    paddingHorizontal: 24,
-    marginBottom: 32,
+  section: {  
+    width: '92%',
+    alignSelf: 'center',
+    marginBottom: 3,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#111827',
-    marginBottom: 16,
+    color: colors.textSecondary,
+    marginBottom: 6,
+    marginTop:6
   },
   transactionItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 16,
+  },
+  txItemWrapper:{
+    width: '92%',
+    alignSelf: 'center',
   },
   transactionLeft: {
     flexDirection: 'row',
@@ -105,12 +115,12 @@ export const styles = StyleSheet.create({
   transactionCategory: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   transactionDescription: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   transactionRight: {
     alignItems: 'flex-end',
@@ -122,7 +132,7 @@ export const styles = StyleSheet.create({
   },
   transactionTime: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   modalOverlay: {
     flex: 1,
@@ -132,7 +142,7 @@ export const styles = StyleSheet.create({
     padding: 16,
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
     borderRadius: 24,
     padding: 24,
     width: '100%',

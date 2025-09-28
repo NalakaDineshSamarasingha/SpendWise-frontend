@@ -17,6 +17,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 
 import React, { useEffect, useState } from 'react';
+import colors from '@/constants/color';
 
 export default function ProfileScreen() {
   const [user, setUser] = useState<any>(null);
@@ -52,28 +53,28 @@ export default function ProfileScreen() {
       id: 1,
       title: 'Account',
       icon: 'person.circle',
-      backgroundColor: '#E8D5FF',
+      backgroundColor: colors.border,
       onPress: () => router.push('/(tabs)/profile/account'),
     },
     {
       id: 2,
       title: 'Settings',
       icon: 'gear',
-      backgroundColor: '#E8D5FF',
+      backgroundColor: colors.border,
       onPress: () => console.log('Settings pressed'),
     },
     {
       id: 3,
       title: 'Export Data',
       icon: 'arrow.up.doc',
-      backgroundColor: '#E8D5FF',
+      backgroundColor: colors.border,
       onPress: () => console.log('Export Data pressed'),
     },
     {
       id: 4,
       title: 'Logout',
       icon: 'rectangle.portrait.and.arrow.right',
-      backgroundColor: '#FECACA',
+      backgroundColor: colors.border,
       onPress: handleLogout,
     },
   ];
@@ -145,7 +146,7 @@ export default function ProfileScreen() {
               <IconSymbol 
                 name={item.icon} 
                 size={24} 
-                color={item.id === 4 ? '#EF4444' : '#8B5CF6'} 
+                color={item.id === 4 ? '#EF4444' : colors.textPrimary} 
               />
             </View>
             <ThemedText style={styles.menuItemText}>{item.title}</ThemedText>
@@ -161,8 +162,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
-    paddingTop: 50,
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
@@ -173,9 +173,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
+    paddingTop:80,
     paddingVertical: 32,
     marginBottom: 8,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.backgroundSecondary,
   },
   profileImageContainer: {
     position: 'relative',
@@ -202,20 +203,20 @@ const styles = StyleSheet.create({
     bottom: -3,
     borderRadius: 35,
     borderWidth: 3,
-    borderColor: '#A855F7',
+    borderColor: colors.accentBlue,
   },
   profileInfo: {
     flex: 1,
   },
   usernameLabel: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   username: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.textPrimary,
   },
   emailText: {
     fontSize: 12,
@@ -226,20 +227,27 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   menuContainer: {
-    paddingHorizontal: 20,
+    width:"96%",
+    alignSelf:"center",
     backgroundColor: 'transparent',
+    marginTop:20,
+    gap:10,
   },
   // Removed summary styles
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 16,
-    paddingHorizontal: 4,
+    backgroundColor:colors.backgroundSecondary,
+    borderRadius:10,
+    paddingHorizontal: 15,
+    gap:2
   },
   iconContainer: {
     width: 48,
     height: 48,
     borderRadius: 12,
+   
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -247,7 +255,7 @@ const styles = StyleSheet.create({
   menuItemText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#111827',
+    color: colors.textPrimary,
     flex: 1,
   },
   userDetailsSection: {
