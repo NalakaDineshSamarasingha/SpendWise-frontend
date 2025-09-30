@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { TripCategorySelector } from "./TripCategorySelector";
 
 export type NewDestination = {
   location: string;
@@ -19,6 +20,13 @@ export type NewDestination = {
   food: string;
   other: string;
 };
+
+const budgetCategories = [
+  { name: "Transport", icon: "car-outline", color: "#F59E0B" },
+  { name: "Stay", icon: "bed-outline", color: "#10B981" },
+  { name: "Food", icon: "restaurant-outline", color: "#EF4444" },
+  { name: "Other", icon: "cash-outline", color: "#6366F1" },
+];
 
 export function AddDestinationModal({
   visible,
@@ -34,6 +42,7 @@ export function AddDestinationModal({
   onAdd: () => void;
 }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("Transport");
 
   // Update total budget whenever any category changes
   useEffect(() => {
@@ -98,50 +107,35 @@ export function AddDestinationModal({
             />
           )}
 
+          <Text style={styles.inputLabel}>Budget Categories</Text>
+          <TripCategorySelector
+            categories={budgetCategories}
+            selected={selectedCategory}
+            onSelect={(name) => setSelectedCategory(name)}
+          />
+
+          <TextInput
+            style={styles.textInput}
+            placeholder={`Enter ${selectedCategory} budget`}
+            value={
+              newDestination[
+                selectedCategory.toLowerCase() as keyof NewDestination
+              ] as string
+            }
+            onChangeText={(text) =>
+              setNewDestination({
+                ...newDestination,
+                [selectedCategory.toLowerCase()]: text,
+              })
+            }
+            keyboardType="numeric"
+          />
           <Text style={styles.inputLabel}>Planned Budget (Total)</Text>
           <TextInput
             style={styles.textInput}
             placeholder="Total budget"
             value={newDestination.totalBudget}
             editable={false} // make it read-only
-          />
-
-          <Text style={styles.inputLabel}>Budget Categories</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Transport"
-            value={newDestination.transport}
-            onChangeText={(text) =>
-              setNewDestination({ ...newDestination, transport: text })
-            }
-            keyboardType="numeric"
-          />
-          <TextInput
-            style={styles.textInput}
-            placeholder="Stay"
-            value={newDestination.stay}
-            onChangeText={(text) =>
-              setNewDestination({ ...newDestination, stay: text })
-            }
-            keyboardType="numeric"
-          />
-          <TextInput
-            style={styles.textInput}
-            placeholder="Food"
-            value={newDestination.food}
-            onChangeText={(text) =>
-              setNewDestination({ ...newDestination, food: text })
-            }
-            keyboardType="numeric"
-          />
-          <TextInput
-            style={styles.textInput}
-            placeholder="Other"
-            value={newDestination.other}
-            onChangeText={(text) =>
-              setNewDestination({ ...newDestination, other: text })
-            }
-            keyboardType="numeric"
           />
 
           <View style={styles.modalButtons}>
@@ -217,4 +211,3 @@ const styles = StyleSheet.create({
   },
   addButtonText: { fontSize: 16, fontWeight: "600", color: "#FFFFFF" },
 });
-

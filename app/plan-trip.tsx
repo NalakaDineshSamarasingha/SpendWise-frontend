@@ -80,9 +80,7 @@ export default function PlanTripScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
-          <Text style={styles.backTxt}>← Back</Text>
-        </TouchableOpacity>
+        
       
       </View>
 
@@ -109,17 +107,14 @@ export default function PlanTripScreen() {
       <View style={styles.content}>
         {tripList.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>🗺️</Text>
             <Text style={styles.emptyTitle}>No trips planned yet</Text>
-            <Text style={styles.emptySubtitle}>
-              Start planning your adventure by adding your first destination
-            </Text>
+            
           </View>
         ) : (
           <>
             <View style={styles.sectionHeader}>
               <Text style={styles.plannedTripsHeader}>
-                🎯 Your Planned Trips ({tripList.length})
+                 Your Planned Trips ({tripList.length})
               </Text>
             </View>
 
@@ -187,7 +182,7 @@ export default function PlanTripScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FAFBFC",
+    backgroundColor: "#121212",
     paddingHorizontal: 20,
   },
   header: {
@@ -196,23 +191,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     marginTop: 50,
   },
-  backBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    marginRight: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  backTxt: {
-    color: "#392D91",
-    fontWeight: "600",
-    fontSize: 16,
-  },
+
   title: {
     fontSize: 28,
     fontWeight: "800",
@@ -224,11 +203,11 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   heroGradient: {
-    backgroundColor: "#392D91",
+    backgroundColor: "#1E1E1E",
     borderRadius: 20,
     paddingVertical: 32,
     paddingHorizontal: 24,
-    shadowColor: "#392D91",
+    shadowColor: "#1E1E1E",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -243,7 +222,7 @@ const styles = StyleSheet.create({
   },
   heroSubtitle: {
     fontSize: 16,
-    color: "rgba(255, 255, 255, 0.8)",
+    color: "#B0B0B0",
     textAlign: "center",
     marginBottom: 24,
     fontWeight: "400",
@@ -274,7 +253,7 @@ const styles = StyleSheet.create({
   },
   addBtnText: {
     fontSize: 24,
-    color: "#392D91",
+    color: "#1E1E1E",
     fontWeight: "700",
   },
   addBtnLabel: {
@@ -293,7 +272,7 @@ const styles = StyleSheet.create({
   plannedTripsHeader: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#1F2937",
+    color: "#FFFFFF",
     letterSpacing: -0.3,
   },
 
