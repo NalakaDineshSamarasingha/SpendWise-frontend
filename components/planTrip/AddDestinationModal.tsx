@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { TripCategorySelector } from "./TripCategorySelector";
+import colors from "@/constants/color";
 
 export type NewDestination = {
   location: string;
@@ -130,13 +131,45 @@ export function AddDestinationModal({
             }
             keyboardType="numeric"
           />
+
           <Text style={styles.inputLabel}>Planned Budget (Total)</Text>
           <TextInput
             style={styles.textInput}
             placeholder="Total budget"
             value={newDestination.totalBudget}
-            editable={false} // make it read-only
+            editable={false}
           />
+
+          {/* New Summary Section */}
+          <View style={styles.expenseSummary}>
+            <Text style={styles.expenseSummaryTitle}>
+              Your Expense Breakdown
+            </Text>
+            <View style={styles.expenseRow}>
+              <Text style={styles.expenseLabel}> Transport:</Text>
+              <Text style={styles.expenseValue}>
+                {newDestination.transport || "0"}
+              </Text>
+            </View>
+            <View style={styles.expenseRow}>
+              <Text style={styles.expenseLabel}> Stay:</Text>
+              <Text style={styles.expenseValue}>
+                {newDestination.stay || "0"}
+              </Text>
+            </View>
+            <View style={styles.expenseRow}>
+              <Text style={styles.expenseLabel}> Food:</Text>
+              <Text style={styles.expenseValue}>
+                {newDestination.food || "0"}
+              </Text>
+            </View>
+            <View style={styles.expenseRow}>
+              <Text style={styles.expenseLabel}> Other:</Text>
+              <Text style={styles.expenseValue}>
+                {newDestination.other || "0"}
+              </Text>
+            </View>
+          </View>
 
           <View style={styles.modalButtons}>
             <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
@@ -155,13 +188,13 @@ export function AddDestinationModal({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "'rgba(255,255,255,0.1)'",
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
   },
   modalContent: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.background,
     borderRadius: 24,
     padding: 24,
     width: "100%",
@@ -172,24 +205,23 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
     marginBottom: 24,
-    color: "#111827",
+    color: colors.textPrimary,
   },
   inputLabel: {
     fontSize: 16,
     fontWeight: "500",
-    color: "#111827",
+    color: colors.textSecondary,
     marginBottom: 8,
     marginTop: 16,
   },
   textInput: {
-    backgroundColor: "#F9FAFB",
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
-    color: "#111827",
+    color: "#ffffffff",
     marginBottom: 8,
   },
   modalButtons: { flexDirection: "row", marginTop: 24 },
@@ -210,4 +242,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addButtonText: { fontSize: 16, fontWeight: "600", color: "#FFFFFF" },
+  expenseSummary: {
+    marginTop: 16,
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#3B82F6",
+  },
+  expenseSummaryTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: colors.textPrimary,
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  expenseRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 4,
+  },
+  expenseLabel: {
+    fontSize: 15,
+    color: colors.textSecondary,
+  },
+  expenseValue: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#3B82F6",
+  },
 });

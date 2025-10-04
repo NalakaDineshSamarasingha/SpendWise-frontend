@@ -13,6 +13,7 @@ import {
   AddDestinationModal,
   NewDestination,
 } from "../components/planTrip/AddDestinationModal";
+import colors from "@/constants/color";
 
 const { width } = Dimensions.get("window");
 
@@ -60,13 +61,13 @@ export default function PlanTripScreen() {
     });
   };
 
-  // const handleTripPress = (trip: NewDestination) => {
-  //   // Navigate to details page and pass trip details
-  //   router.push({
-  //     pathname: "/../components/planTrip/Tripdetails",
-  //     params: { trip: JSON.stringify(trip) },
-  //   });
-  // };
+  const handleTripPress = (trip: NewDestination) => {
+    // Navigate to details page and pass trip details
+    router.push({
+      pathname: "../components/planTrip/tripdetails",
+      params: { trip: JSON.stringify(trip) },
+    });
+  };
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", {
@@ -79,16 +80,13 @@ export default function PlanTripScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        
-      
-      </View>
+      <View style={styles.header}></View>
+      <Text style={styles.heroTitle}>Travel Destinations</Text>
 
       {/* Hero Section with Add New Destination */}
       <View style={styles.heroSection}>
         <View style={styles.heroGradient}>
-          <Text style={styles.heroTitle}>Travel Destinations</Text>
-          <Text style={styles.heroSubtitle}>Create unforgettable memories</Text>
+         
 
           <TouchableOpacity
             style={styles.addDestinationBtn}
@@ -108,13 +106,12 @@ export default function PlanTripScreen() {
         {tripList.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyTitle}>No trips planned yet</Text>
-            
           </View>
         ) : (
           <>
             <View style={styles.sectionHeader}>
               <Text style={styles.plannedTripsHeader}>
-                 Your Planned Trips ({tripList.length})
+                Your Planned Trips ({tripList.length})
               </Text>
             </View>
 
@@ -125,39 +122,20 @@ export default function PlanTripScreen() {
               contentContainerStyle={styles.tripsList}
               renderItem={({ item, index }) => (
                 <TouchableOpacity
-                  style={[
-                    styles.tripItem,
-                    {
-                      backgroundColor: index % 2 === 0 ? "#F8FAFC" : "#F1F5F9",
-                      shadowColor: "#392D91",
-                    },
-                  ]}
-                  // onPress={() => handleTripPress(item)}
+                  onPress={() => handleTripPress(item)}
                   activeOpacity={0.7}
                 >
                   <View style={styles.tripContent}>
                     <View style={styles.tripMainInfo}>
-                      <Text style={styles.tripLocation}>
-                         {item.location}
-                      </Text>
+                      <Text style={styles.tripLocation}>{item.location}</Text>
                       <Text style={styles.tripDate}>
-                         {formatDate(item.date)}
+                        {formatDate(item.date)}
                       </Text>
-                    </View>
-
-                    <View style={styles.tripDetails}>
-                      {item.totalBudget && (
-                        <View style={styles.budgetTag}>
-                          <Text style={styles.budgetText}>
-                            💰 ${item.totalBudget}
-                          </Text>
-                        </View>
-                      )}
                     </View>
 
                     <View style={styles.tripFooter}>
                       <Text style={styles.tapHint}>Tap to view details</Text>
-                      <Text style={styles.arrowIcon}>→</Text>
+                      
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -290,14 +268,17 @@ const styles = StyleSheet.create({
   },
   tripContent: {
     padding: 20,
+    backgroundColor: colors.surface,
+    borderRadius: 30,
+    margin:20,
   },
   tripMainInfo: {
-    marginBottom: 12,
+    marginBottom: 13,
   },
   tripLocation: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#1F2937",
+    color:colors.textPrimary,
     marginBottom: 6,
   },
   tripDate: {
@@ -308,39 +289,22 @@ const styles = StyleSheet.create({
   tripDetails: {
     marginBottom: 16,
   },
-  budgetTag: {
-    alignSelf: "flex-start",
-    backgroundColor: "#DEF7EC",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#A7F3D0",
-  },
-  budgetText: {
-    fontSize: 14,
-    color: "#047857",
-    fontWeight: "600",
-  },
+  
+  
   tripFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "rgba(107, 114, 128, 0.1)",
+    borderTopColor: "rgba(254, 254, 254, 0.1)",
   },
   tapHint: {
     fontSize: 14,
-    color: "#6B7280",
+    color: colors.textPrimary,
     fontStyle: "italic",
   },
-  arrowIcon: {
-    fontSize: 18,
-    color: "#392D91",
-    fontWeight: "bold",
-  },
-
+  
   emptyState: {
     flex: 1,
     justifyContent: "center",
@@ -358,11 +322,5 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: "center",
   },
-  emptySubtitle: {
-    fontSize: 16,
-    color: "#6B7280",
-    textAlign: "center",
-    lineHeight: 24,
-    paddingHorizontal: 20,
-  },
+  
 });
