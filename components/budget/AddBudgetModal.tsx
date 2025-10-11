@@ -4,13 +4,15 @@ import { Fonts } from '@/constants/theme';
 import { CategoryBudget, CreateBudgetInput, TimeframeType } from '@/services/budgetService';
 import { categories as allCategories } from '@/utils/categoryUtils';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function AddBudgetModal({ visible, onClose, onSubmit }: {
+export default function AddBudgetModal({ visible, onClose, onSubmit, initial, submitLabel }: {
   visible: boolean;
   onClose: () => void;
   onSubmit: (input: CreateBudgetInput) => void;
+  initial?: { name: string; timeframe: TimeframeType; startDate: string; endDate: string; categories: CategoryBudget[] };
+  submitLabel?: string;
 }) {
   const [name, setName] = useState('My Budget');
   const [timeframe, setTimeframe] = useState<TimeframeType>('monthly');
@@ -21,6 +23,23 @@ export default function AddBudgetModal({ visible, onClose, onSubmit }: {
   const [showEndPicker, setShowEndPicker] = useState(false);
 
   const selectedCategories = useMemo<Category[]>(() => allCategories, []);
+
+  // hydrate form when editing
+  useEffect(() => {
+    if (!visible) return;
+    if (!initial) return;
+    setName(initial.name || 'My Budget');
+    setTimeframe(initial.timeframe || 'custom');
+    setStartDate(parseDate(initial.startDate, true));
+    setEndDate(parseDate(initial.endDate, false));
+    setCategoryBudgets(() => {
+      const map: Record<string, string> = {};
+      for (const c of initial.categories || []) {
+        map[c.category] = String(c.limit ?? '');
+      }
+      return map;
+    });
+  }, [visible, initial]);
 
   function setPeriod(tf: TimeframeType) {
     setTimeframe(tf);
@@ -162,7 +181,7 @@ export default function AddBudgetModal({ visible, onClose, onSubmit }: {
               <Text style={styles.btnGhostText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleCreate} style={[styles.btn, styles.btnPrimary]}>
-              <Text style={styles.btnPrimaryText}>Create</Text>
+              <Text style={styles.btnPrimaryText}>{submitLabel || 'Create'}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -218,6 +237,16 @@ function endOfDay(date: Date): Date {
   const d = new Date(date);
   d.setHours(23, 59, 59, 999);
   return d;
+}
+
+function parseDate(dateStr: string, start: boolean): Date {
+  if (dateStr.includes('T')) {
+    const d = new Date(dateStr);
+    return start ? beginOfDay(d) : endOfDay(d);
+  }
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(y, (m || 1) - 1, d || 1);
+  return start ? beginOfDay(dt) : endOfDay(dt);
 }
 
 const styles = StyleSheet.create({
