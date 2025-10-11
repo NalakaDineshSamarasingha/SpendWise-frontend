@@ -210,7 +210,6 @@ export default function AccountCollaborators() {
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <ScrollView contentContainerStyle={{ paddingBottom: 40, flexGrow: 1, backgroundColor: colors.background }}>
         <View style={{ paddingTop: 60, paddingHorizontal: 20 }}>
-          {/* Replaced native Button to control width */}
           <TouchableOpacity
             onPress={() => router.back()}
             activeOpacity={0.7}
