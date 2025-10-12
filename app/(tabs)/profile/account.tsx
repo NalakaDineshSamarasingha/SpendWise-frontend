@@ -1,10 +1,10 @@
 // app/(tabs)/profile/account.tsx
+import colors from "@/constants/color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Button,
   FlatList,
   Image,
   KeyboardAvoidingView,
@@ -13,7 +13,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 interface Collaborator {
@@ -168,7 +168,7 @@ export default function AccountCollaborators() {
       <View style={{
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: colors.backgroundSecondary,
         padding: 12,
         borderRadius: 12,
         marginBottom: 8,
@@ -184,21 +184,21 @@ export default function AccountCollaborators() {
             width: 42,
             height: 42,
             borderRadius: 21,
-            backgroundColor: "#6366F1",
+            backgroundColor: colors.accentBlue,
             marginRight: 12,
             alignItems: "center",
             justifyContent: "center"
           }}>
-            <Text style={{ color: "#fff", fontWeight: "bold" }}>{initial}</Text>
+            <Text style={{ color: colors.textPrimary, fontWeight: "bold" }}>{initial}</Text>
           </View>
         )}
         <View style={{ flex: 1 }}>
-          <Text style={{ fontWeight: "600", color: "#111" }}>{name}</Text>
-          <Text style={{ color: "#666", fontSize: 12 }}>{item.email}</Text>
-          {item.role && <Text style={{ color: "#6D28D9", fontSize: 11, marginTop: 2 }}>{item.role}</Text>}
+          <Text style={{ fontWeight: "600", color: colors.textPrimary }}>{name}</Text>
+          <Text style={{ color: colors.textDisabled, fontSize: 12 }}>{item.email}</Text>
+          {item.role && <Text style={{ color: colors.accentGreen, fontSize: 11, marginTop: 2 }}>{item.role}</Text>}
         </View>
         {item.createdAt && (
-          <Text style={{ color: "#999", fontSize: 10 }}>
+          <Text style={{ color: colors.textDisabled, fontSize: 10 }}>
             {new Date(item.createdAt).toLocaleDateString()}
           </Text>
         )}
@@ -208,15 +208,28 @@ export default function AccountCollaborators() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 40, flexGrow: 1, backgroundColor: "#F3F4F6" }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40, flexGrow: 1, backgroundColor: colors.background }}>
         <View style={{ paddingTop: 60, paddingHorizontal: 20 }}>
-          <Button title="⬅ Back" onPress={() => router.back()} />
-          <Text style={{ marginTop: 20, fontSize: 22, fontWeight: "700" }}>Account Collaborators</Text>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            activeOpacity={0.7}
+            style={{
+              width: 90,
+              backgroundColor: colors.accentBlue,
+              paddingVertical: 10,
+              borderRadius: 8,
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            <Text style={{ color: colors.textPrimary, fontWeight: "600" }}>Back</Text>
+          </TouchableOpacity>
+          <Text style={{ marginTop: 20, fontSize: 22, fontWeight: "700" ,color:colors.textPrimary}}>Account Collaborators</Text>
 
           {/* Add collaborator */}
-          <View style={{ marginTop: 24, backgroundColor: "#FFFFFF", padding: 16, borderRadius: 14 }}>
-            <Text style={{ fontSize: 14, fontWeight: "600", marginBottom: 6, color: "#111827" }}>Add Collaborator</Text>
-            <Text style={{ fontSize: 12, color: "#6B7280", marginBottom: 10 }}>
+          <View style={{ marginTop: 24, backgroundColor: colors.backgroundSecondary, padding: 16, borderRadius: 14 }}>
+            <Text style={{ fontSize: 14, fontWeight: "600", marginBottom: 6, color: colors.textSecondary }}>Add Collaborator</Text>
+            <Text style={{ fontSize: 12, color: colors.textDisabled, marginBottom: 10 }}>
               Invite a user by email to share and manage this account.
             </Text>
             <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 6 }}>
@@ -224,13 +237,13 @@ export default function AccountCollaborators() {
                 style={{
                   flex: 1,
                   borderWidth: 1,
-                  borderColor: "#E5E7EB",
-                  borderRadius: 8,
+                  borderColor: colors.border,
+                  borderRadius: 3,
                   paddingHorizontal: 12,
                   paddingVertical: 10,
                   fontSize: 14,
-                  backgroundColor: "#F9FAFB",
-                  color: "#111827",
+                  backgroundColor: colors.hover,
+                  color: colors.textSecondary,
                 }}
                 placeholder="user@example.com"
                 autoCapitalize="none"
@@ -244,15 +257,19 @@ export default function AccountCollaborators() {
                 disabled={adding}
                 style={{
                   marginLeft: 8,
-                  backgroundColor: "#8B5CF6",
-                  paddingHorizontal: 18,
+                  width: 78,            // fixed width
+                  backgroundColor: colors.accentBlue,
                   paddingVertical: 12,
-                  borderRadius: 8,
+                  borderRadius: 3,
+                  alignItems: "center",
+                  justifyContent: "center",
                   opacity: adding ? 0.6 : 1
                 }}
                 activeOpacity={0.7}
               >
-                <Text style={{ color: "#fff", fontWeight: "600" }}>{adding ? "..." : "Add"}</Text>
+                <Text style={{ color: colors.textPrimary, fontWeight: "600" }}>
+                  {adding ? "..." : "Add"}
+                </Text>
               </TouchableOpacity>
             </View>
 
@@ -261,7 +278,7 @@ export default function AccountCollaborators() {
                 style={{
                   borderWidth: 1,
                   borderColor: "#E5E7EB",
-                  backgroundColor: "#FFFFFF",
+                  backgroundColor: colors.border,
                   borderRadius: 8,
                   overflow: "hidden",
                   marginBottom: 6
@@ -298,16 +315,16 @@ export default function AccountCollaborators() {
                             width: 32,
                             height: 32,
                             borderRadius: 16,
-                            backgroundColor: "#F1F5F9",
+                            backgroundColor: colors.textPrimary,
                             alignItems: "center",
                             justifyContent: "center"
                           }}
                         >
-                          <Text style={{ fontSize: 12, color: "#6B7280" }}>@</Text>
+                          <Text style={{ fontSize: 12, color: colors.textPrimary }}>@</Text>
                         </View>
                       )}
                       <View style={{ marginLeft: 10, flex: 1 }}>
-                        <Text style={{ fontSize: 14, color: "#111827", fontWeight: "500" }}>{u.email}</Text>
+                        <Text style={{ fontSize: 14, color: colors.textPrimary, fontWeight: "500" }}>{u.email}</Text>
                         {!!u.displayName && (
                           <Text style={{ fontSize: 12, color: "#6B7280", marginTop: 2 }}>{u.displayName}</Text>
                         )}
@@ -332,17 +349,17 @@ export default function AccountCollaborators() {
                 paddingVertical: 4,
                 paddingHorizontal: 10,
                 borderRadius: 6,
-                backgroundColor: "#F3F4F6"
+                backgroundColor: colors.accentGreen
               }}
               activeOpacity={0.6}
             >
-              <Text style={{ fontSize: 12, color: "#374151", fontWeight: "500" }}>Refresh</Text>
+              <Text style={{ fontSize: 12, color: colors.textPrimary, fontWeight: "500" }}>Refresh</Text>
             </TouchableOpacity>
           </View>
 
           {/* Collaborator list */}
           <View style={{ marginTop: 20 }}>
-            <Text style={{ fontSize: 16, fontWeight: "600", color: "#111827", marginBottom: 10 }}>
+            <Text style={{ fontSize: 16, fontWeight: "600", color: colors.textPrimary, marginBottom: 10 }}>
               Current Collaborators
             </Text>
             {loading ? (

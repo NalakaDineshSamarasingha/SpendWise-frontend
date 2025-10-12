@@ -23,9 +23,9 @@ export interface CreateTransactionInput {
 
 export async function getTransactions(): Promise<TransactionDTO[]> {
   // Backend route example: /transactions (protected)
-  return apiGet<TransactionDTO[]>('/transactions');
+  return apiGet<TransactionDTO[]>('/trans/transactions');
 }
 
 export async function createTransaction(input: CreateTransactionInput): Promise<TransactionDTO> {
-  return apiPost<TransactionDTO>('/transactions', input);
+  return apiPost<TransactionDTO>('/trans/transactions', input);
 }

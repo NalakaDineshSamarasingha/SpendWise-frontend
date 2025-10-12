@@ -2,6 +2,7 @@ import React from "react";
 import { TouchableOpacity, Text, StyleSheet, View, Image } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri } from "expo-auth-session";
+import colors from "@/constants/color";
 
 const BACKEND_URL = "https://spendwise-backend-2nvv.onrender.com";
 
@@ -42,7 +43,7 @@ export default function GoogleLoginButton({ onLogin }: { onLogin: (token: string
 
 const styles = StyleSheet.create({
   googleButton: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.border,
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 20,
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   googleButtonText: {
-    color: '#333',
+    color: colors.textSecondary,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',

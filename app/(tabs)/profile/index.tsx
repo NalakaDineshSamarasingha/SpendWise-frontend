@@ -8,13 +8,15 @@ import {
   StatusBar,
   StyleSheet,
   TouchableOpacity,
-  View
+  View,
+  Alert
 } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
+import { useAuth } from '@/components/AuthGate'; // Import the auth context
 
 import React, { useEffect, useState } from 'react';
 import colors from '@/constants/color';
@@ -23,6 +25,7 @@ export default function ProfileScreen() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { logout } = useAuth(); // Use auth context
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -40,12 +43,22 @@ export default function ProfileScreen() {
     fetchUser();
   }, []);
 
-  const handleLogout = async () => {
-    await AsyncStorage.removeItem('jwt_token');
-    router.replace('/');
-    if (typeof window !== 'undefined') {
-      window.location.reload();
-    }
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: logout, // Use the logout function from AuthGate
+        },
+      ]
+    );
   };
 
   const menuItems = [
@@ -82,7 +95,7 @@ export default function ProfileScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={colors.accentGreen} />
       </View>
     );
   }
@@ -95,8 +108,6 @@ export default function ProfileScreen() {
     // Check for profile image URL in token
     return user?.picture || user?.avatar_url || user?.profile_image || null;
   };
-
-  // account summary removed
 
   return (
     <SafeAreaView style={styles.container}>
@@ -149,12 +160,16 @@ export default function ProfileScreen() {
                 color={item.id === 4 ? '#EF4444' : colors.textPrimary} 
               />
             </View>
-            <ThemedText style={styles.menuItemText}>{item.title}</ThemedText>
+            <ThemedText style={[
+              styles.menuItemText,
+              item.id === 4 && { color: '#EF4444' } // Make logout text red
+            ]}>
+              {item.title}
+            </ThemedText>
+            <IconSymbol name="chevron.right" size={16} color="#9CA3AF" />
           </TouchableOpacity>
         ))}
       </ThemedView>
-
-      {/* Removed account summary, user details, and bottom indicator as requested */}
     </SafeAreaView>
   );
 }
@@ -168,12 +183,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.background,
   },
   profileSection: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop:80,
+    paddingTop: 80,
     paddingVertical: 32,
     marginBottom: 8,
     backgroundColor: colors.backgroundSecondary,
@@ -227,27 +243,24 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   menuContainer: {
-    width:"96%",
-    alignSelf:"center",
+    width: "96%",
+    alignSelf: "center",
     backgroundColor: 'transparent',
-    marginTop:20,
-    gap:10,
+    marginTop: 20,
+    gap: 10,
   },
-  // Removed summary styles
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 16,
-    backgroundColor:colors.backgroundSecondary,
-    borderRadius:10,
+    backgroundColor: colors.backgroundSecondary,
+    borderRadius: 10,
     paddingHorizontal: 15,
-    gap:2
   },
   iconContainer: {
     width: 48,
     height: 48,
     borderRadius: 12,
-   
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -257,33 +270,5 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: colors.textPrimary,
     flex: 1,
-  },
-  userDetailsSection: {
-    marginHorizontal: 20,
-    marginTop: 24,
-    padding: 16,
-    backgroundColor: '#F3F4F6',
-    borderRadius: 12,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 12,
-    color: '#111827',
-  },
-  detailText: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 4,
-  },
-  bottomIndicator: {
-    position: 'absolute',
-    bottom: 8,
-    left: '50%',
-    marginLeft: -67.5,
-    width: 135,
-    height: 5,
-    backgroundColor: '#111827',
-    borderRadius: 3,
   },
 });
