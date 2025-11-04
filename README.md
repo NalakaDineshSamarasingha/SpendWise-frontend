@@ -18,7 +18,7 @@ Track your expenses, set budgets, collaborate with a partner, and plan savings o
 | 🔐 Google Login              | ✅ Working |
 | 📝 Add & Track Transactions  | ✅ Working |
 | 📊 Spending Insights         | ✅ Working |
-| 💰 Budget Creation           | ❌ Not yet implemented |
+| 💰 Budget Creation           | ✅ Working |
 | 👥 Collaborate with One User (family, partner, friend) | ✅ Working |
 | 🌍 Trip & Event Planning     | ❌ Not yet implemented|
 | 🎯 Saving Goals              | ❌ Not yet implemented |
